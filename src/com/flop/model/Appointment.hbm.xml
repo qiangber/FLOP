@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="com.flop.model">
+
+	<class name="Appointment" table="t_appointment">
+		<id name="id" column="id">
+			<generator class="native"></generator>
+		</id>
+		
+		<discriminator column="type" type="string"></discriminator>
+		<property name="date" type="date"></property>
+		<property name="lesson" length="20"></property>
+		<property name="userId" length="20"></property>
+		<property name="categoryId" length="20"></property>
+		<property name="publishTime" type="date"></property>
+		
+		<many-to-one name="userInfo" column="user" class="com.flop.model.UserInfo" lazy="false"></many-to-one>
+		<many-to-one name="category" column="category" class="com.flop.model.Category" lazy="false"></many-to-one>
+		
+		<subclass name="com.flop.model.LabAppointment" discriminator-value="lab"></subclass>
+		<subclass name="com.flop.model.WritingAppointment" discriminator-value="writing"></subclass>
+		<subclass name="com.flop.model.SpeakingAppointment" discriminator-value="speaking"></subclass>
+	</class>
+
+</hibernate-mapping>

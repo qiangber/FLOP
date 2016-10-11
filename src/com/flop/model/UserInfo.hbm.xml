@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="com.flop.model">
+
+	<class name="UserInfo" table="t_userinfo">
+		<id name="id" column="id">
+			<generator class="native"></generator>
+		</id>
+        <property name="name" length="40"></property>
+        <property name="username" length="40"></property>
+        <property name="college" length="40"></property>
+        <property name="grade" length="40"></property>
+        <property name="team" length="40"></property>
+        <property name="sex" length="20"></property>
+        <property name="phone" length="20"></property>
+        <property name="email" length="40"></property>
+        <property name="type" length="20"></property>
+        <property name="speaking" type="boolean"></property>
+        <property name="writing" type="boolean"></property>
+        <property name="lab" type="boolean"></property>
+	</class>
+
+</hibernate-mapping>
