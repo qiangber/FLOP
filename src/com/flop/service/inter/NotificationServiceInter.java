@@ -13,6 +13,7 @@ public interface NotificationServiceInter {
 	public int getNotificationsCount(String userId, int pageSize);
 	public int getNewNotificationsCount(String userId);
 	public void addNotification(Notification notification);
+	public void mergeNotification(Notification notification);
 	public Notification find(String userId, String orderId);
 	public void notifyUser(String userId);
 }

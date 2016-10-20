@@ -1,6 +1,8 @@
 package com.flop.service.impl;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -43,11 +45,12 @@ public class NotificationServiceImpl implements NotificationServiceInter {
 				msg.append("实验室预约（");
 			}
 			msg.append(notification.getOrder().getAppoint().getCategory().getName()).append(" ");
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
-			msg.append(sdf.format(notification.getOrder().getAppoint().getDate())).append(" 第");
+			SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+			SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy/MM/dd");
+			msg.append(sdf2.format(notification.getOrder().getAppoint().getDate())).append(" 第");
 			msg.append(Integer.toString(notification.getOrder().getAppoint().getLesson())).append("节）");
 			map.put("msg", msg.toString());
-			map.put("date", sdf.format(notification.getDate()));
+			map.put("date", sdf1.format(notification.getDate()));
 			list.add(map);
 			notification.setHasRead("1");
 			HibernateUtils.merge(notification);
@@ -73,7 +76,26 @@ public class NotificationServiceImpl implements NotificationServiceInter {
 	
 	@Override
 	public void addNotification(Notification notification) {
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		String dateTime = sdf.format(notification.getDate());
+		try {
+			notification.setDate(sdf.parse(dateTime));
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
 		HibernateUtils.save(notification);
+	}
+	
+	@Override
+	public void mergeNotification(Notification notification) {
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		String dateTime = sdf.format(new Date());
+		try {
+			notification.setDate(sdf.parse(dateTime));
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		HibernateUtils.merge(notification);
 	}
 	
 	@Override
@@ -95,7 +117,6 @@ public class NotificationServiceImpl implements NotificationServiceInter {
             }
 
             if (session.isOpen()) {
-            	System.out.println("sendMsg");
                 session.getAsyncRemote().sendText("1");
             }
         }

@@ -244,11 +244,10 @@ public class OrderServiceImpl implements OrderServiceInter {
 			Order order = findById(orderId);
 			order.setStatus("cancel");			
 			if (HibernateUtils.merge(order)) {
-				Notification notification = notificationService.find(order.getUserId(), Integer.toString(order.getId()));
-				notification.setDate(new Date());
+				Notification notification = notificationService.find(order.getAppoint().getUserId(), Integer.toString(order.getId()));
 				notification.setHasRead("0");
 				notification.setOrder(order);
-				HibernateUtils.merge(notification);
+				notificationService.mergeNotification(notification);
 				notificationService.notifyUser(order.getAppoint().getUserId());
 				return new Status("success", "成功取消！");
 			} else {

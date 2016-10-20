@@ -33,7 +33,7 @@ public class NotificationChannel {
 		if (SESSIONS.keySet().contains(session)) {
 			return;
 		}
-		LOG.info("Websocket Start Connecting: "+ userId + session);
+		LOG.info(String.format("Websocket Start Connecting: %s %s", userId, session.toString()));
 		SESSIONS.put(session, userId);
 	}
 	
