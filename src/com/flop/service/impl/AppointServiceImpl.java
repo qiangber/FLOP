@@ -38,8 +38,11 @@ public class AppointServiceImpl implements AppointServiceInter {
 			} else if (type.equals("speaking")) {
 				hql = "select distinct a.userInfo from SpeakingAppointment a";
 			}
-			hql = hql.concat(" where a.date >= ? and a.status != 'close'");
-			list = session.createQuery(hql).setDate(0, new Date()).list();			
+			hql = hql.concat(" where a.date >= ? and a.date <= ? and a.status != 'close'");
+			DateTime today = new DateTime(); 
+			list = session.createQuery(hql)
+					.setDate(0, today.plusDays(2).toDate())
+					.setDate(1, today.plusDays(7).toDate()).list();			
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
@@ -64,10 +67,12 @@ public class AppointServiceImpl implements AppointServiceInter {
 				hql = "select distinct a.category from LabAppointment a where a.userInfo.id = ?";
 				teacherId = "1";
 			}
-			hql = hql.concat(" and a.date >= ? and a.status != 'close'");
-			session = HibernateUtils.openSession();		
+			hql = hql.concat(" and a.date >= ? and a.date <= ? and a.status != 'close'");
+			session = HibernateUtils.openSession();
+			DateTime today = new DateTime();
 			list = session.createQuery(hql).setString(0, teacherId)
-					.setDate(1, new Date()).list();			
+					.setDate(1, today.plusDays(2).toDate())
+					.setDate(2, today.plusDays(7).toDate()).list();			
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
@@ -87,10 +92,14 @@ public class AppointServiceImpl implements AppointServiceInter {
 				teacherId = "1";
 			}
 			String hql = "from Appointment where type = ? and category.id = ? and userInfo.id = ?"
-					+ " and date >= ? and status != 'close' order by date, lesson";
+					+ " and date >= ? and a.date <= ? and status != 'close' order by date, lesson";
 			session = HibernateUtils.openSession();
+			DateTime today = new DateTime();
 			appoints = session.createQuery(hql).setString(0, type).setString(1, categoryId)
-					.setString(2, teacherId).setDate(3, new Date()).list();			
+					.setString(2, teacherId)
+					.setDate(3, today.plusDays(2).toDate())
+					.setDate(4, today.plusDays(7).toDate())
+					.list();			
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {

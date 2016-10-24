@@ -134,8 +134,8 @@ public class AppointmentController {
 	@RequestMapping("/list")
 	public ModelAndView listLab(@RequestParam(value="page", required=false, defaultValue="1") int page) {
 		ModelAndView mav = new ModelAndView();
-		mav.addObject("appointList", appointService.findByUserIdAndType("1", "lab", 10, page));		
-		mav.addObject("pageCount", appointService.getPageCount(10));
+		mav.addObject("appointList", appointService.findByUserIdAndType("1", "lab", 15, page));		
+		mav.addObject("pageCount", appointService.getPageCount(15));
 		mav.addObject("currentPage", page);
 		mav.setViewName("appointList");
 		return mav;

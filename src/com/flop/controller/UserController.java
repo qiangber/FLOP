@@ -100,9 +100,9 @@ public class UserController {
 	public ModelAndView list(@RequestParam(value="type", required=true) String type,
 			@RequestParam(value="page", required=false, defaultValue="1") int page) {
 		ModelAndView mav = new ModelAndView();
-		mav.addObject("userList", userService.findAll(10, page, type));
+		mav.addObject("userList", userService.findAll(15, page, type));
 		mav.addObject("currentPage", page);
-		mav.addObject("pageCount", userService.getPageCount(10, type));
+		mav.addObject("pageCount", userService.getPageCount(15, type));
 		if (type.equals("teacher")) {
 			mav.setViewName("teacherList");			
 		} else if (type.equals("student")) {
@@ -117,9 +117,9 @@ public class UserController {
 			@RequestParam(value="searchName") String name,
 			@RequestParam(value="searchNum") String num) {
 		ModelAndView mav = new ModelAndView();
-		mav.addObject("userList", userService.findAll(10, page, type, name, num));
+		mav.addObject("userList", userService.findAll(15, page, type, name, num));
 		mav.addObject("currentPage", page);
-		mav.addObject("pageCount", userService.getPageCount(10, type, name, num));
+		mav.addObject("pageCount", userService.getPageCount(15, type, name, num));
 		mav.addObject("searchName", name);
 		mav.addObject("searchNum", num);
 		if (type.equals("teacher")) {

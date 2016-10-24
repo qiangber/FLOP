@@ -86,8 +86,8 @@ public class OrderController {
 	public ModelAndView labListToDeal(
 			@RequestParam(value="page", required=false, defaultValue="1") int page) {
 		ModelAndView mav = new ModelAndView();
-		mav.addObject("orderList", orderService.findToDeal(10, page));
-		mav.addObject("pageCount", orderService.getPageCount(10, "lab", "1"));
+		mav.addObject("orderList", orderService.findToDeal(15, page));
+		mav.addObject("pageCount", orderService.getPageCount(15, "lab", "1"));
 		mav.addObject("currentPage", page);
 		mav.setViewName("dealList");
 		return mav;
@@ -180,8 +180,8 @@ public class OrderController {
 	public ModelAndView list(@RequestParam(value="page", required=false, defaultValue="1") Integer page,
 			@RequestParam(value="type", required=false, defaultValue="writing") String type) {
 		ModelAndView mav = new ModelAndView();
-		mav.addObject("orderList", orderService.findAll(10, page, type));
-		mav.addObject("pageCount", orderService.getAllPageCount(10, type));
+		mav.addObject("orderList", orderService.findAll(15, page, type));
+		mav.addObject("pageCount", orderService.getAllPageCount(15, type));
 		mav.addObject("currentPage", page);
 		mav.addObject("type", type);
 		mav.setViewName("orderList");

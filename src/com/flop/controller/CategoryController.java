@@ -29,8 +29,8 @@ public class CategoryController {
 	@RequestMapping(value="/list")
 	public ModelAndView list(@RequestParam(value="page", required=false, defaultValue="1") int page) {
 		ModelAndView mav = new ModelAndView();
-		mav.addObject("categoryList", categoryService.findAll(10, page));
-		mav.addObject("pageCount", categoryService.getPageCount(10));
+		mav.addObject("categoryList", categoryService.findAll(15, page));
+		mav.addObject("pageCount", categoryService.getPageCount(15));
 		mav.addObject("currentPage", page);
 		mav.setViewName("categoryList");
 		return mav;

@@ -27,8 +27,8 @@ public class ResourceController {
 	@RequestMapping("/list")
 	public ModelAndView list(@RequestParam(value="page",required=false, defaultValue="1") int page) {
 		ModelAndView mav = new ModelAndView();
-		mav.addObject("resourceList", resourceService.findAll(10, page));
-		mav.addObject("pageCount", resourceService.getPageCount(10));
+		mav.addObject("resourceList", resourceService.findAll(15, page));
+		mav.addObject("pageCount", resourceService.getPageCount(15));
 		mav.addObject("currentPage", page);
 		mav.setViewName("resourceList");
 		return mav;

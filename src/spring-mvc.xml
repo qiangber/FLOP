@@ -63,10 +63,8 @@
 		
 	<!-- <mvc:interceptors>  
         <mvc:interceptor>  
-            需拦截的地址  
             <mvc:mapping path="/*/*.do" />  
             <mvc:mapping path="/*/*.jsp" />  
-            需排除拦截的地址  
             <mvc:exclude-mapping path="/user/login.do"/>
             <mvc:exclude-mapping path="/*/json/*.do"/>
             <bean class="com.flop.service.impl.AdminLoginInterceptor" />  
