@@ -24,4 +24,5 @@ public interface OrderServiceInter {
 	public int getPageCount(int pageSize, String type, String userId);
 	public int getAllPageCount(int pageSize, String type);
 	public Status cancel(String orderId);
+	public boolean close(String appointId);
 }

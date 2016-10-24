@@ -65,6 +65,7 @@
 									<th>时间</th>
 									<th>时段</th>
 									<th>实验室</th>
+									<th>操作</th>
 								</tr>
 								<c:forEach var="appoint" items="${appointList}">
 								<tr>
@@ -72,6 +73,14 @@
 									<td>${appoint.date}</td>
 									<td>${appoint.lesson}</td>
 									<td>${appoint.category.name}</td>
+									<td>
+										<c:if test="${appoint.status == 'open'}">
+											<a href="close.do?appointId=${appoint.id}">关闭预约</a>										
+										</c:if>
+										<c:if test="${appoint.status == 'close'}">
+											<div id="status">已关闭</div>										
+										</c:if>
+									</td>
 								</tr>			
 								</c:forEach>
 							</table>

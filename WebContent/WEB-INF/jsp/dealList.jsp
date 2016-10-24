@@ -86,6 +86,12 @@
 											<c:when test="${order.status == 'reject'}">
 												<div id="status">已拒绝</div>
 											</c:when>
+											<c:when test="${order.status == 'cancel'}">
+												<div id="status">被取消</div>
+											</c:when>
+											<c:when test="${order.status == 'close'}">
+												<div id="status">已关闭</div>
+											</c:when>
 										</c:choose>
 									</td>
 								</tr>			

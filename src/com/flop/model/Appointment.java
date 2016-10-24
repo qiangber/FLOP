@@ -12,6 +12,7 @@ public class Appointment {
 	private Category category;
 	private String userId;
 	private UserInfo userInfo;
+	private String status = "open";
 	public int getId() {
 		return id;
 	}
@@ -65,5 +66,11 @@ public class Appointment {
 	}
 	public void setUserInfo(UserInfo userInfo) {
 		this.userInfo = userInfo;
+	}
+	public String getStatus() {
+		return status;
+	}
+	public void setStatus(String status) {
+		this.status = status;
 	}
 }

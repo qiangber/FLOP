@@ -25,6 +25,8 @@ import com.flop.model.UserInfo;
 import com.flop.model.WritingAppointment;
 import com.flop.service.inter.AppointServiceInter;
 import com.flop.service.inter.CategoryServiceInter;
+import com.flop.service.inter.OrderServiceInter;
+import com.flop.utils.HibernateUtils;
 
 @Controller
 @RequestMapping("/appoint")
@@ -35,6 +37,9 @@ public class AppointmentController {
 	
 	@Autowired
 	private CategoryServiceInter categoryService;
+	
+	@Autowired
+	private OrderServiceInter orderService;
 	
 	@RequestMapping(value="/json/save", method=RequestMethod.POST)
 	public @ResponseBody Status add(HttpServletRequest request,
@@ -121,7 +126,7 @@ public class AppointmentController {
 	
 	@RequestMapping("/json/list")
 	public @ResponseBody List<Appointment> list(
-			@RequestParam(value="userId",required=true) String userId,
+			@RequestParam(value="userId", required=true) String userId,
 			@RequestParam(value="type",required=true) String type) {
 		return appointService.findByUserIdAndType(userId, type);
 	}
@@ -138,27 +143,27 @@ public class AppointmentController {
 	
 	@RequestMapping("/json/teacher")
 	public @ResponseBody List<UserInfo> listTeacher(
-			@RequestParam(value="type",required=true) String type) {
+			@RequestParam(value="type", required=true) String type) {
 		return appointService.findTeacher(type);
 	}
 	
 	@RequestMapping("/json/category")
 	public @ResponseBody List<Category> listCategory(
-			@RequestParam(value="type",required=true) String type,
+			@RequestParam(value="type", required=true) String type,
 			@RequestParam(value="teacherId",required=false) String teacherId) {
 		return appointService.findCategory(type, teacherId);
 	}
 	
 	@RequestMapping("/json/lessons")
 	public @ResponseBody List<Appointment> listLessons(
-			@RequestParam(value="type",required=true) String type,
+			@RequestParam(value="type", required=true) String type,
 			@RequestParam(value="teacherId",required=false) String teacherId,
 			@RequestParam(value="categoryId",required=true) String categoryId) {
 		return appointService.findAppoint(type, teacherId, categoryId);
 	}
 	
 	@RequestMapping("/preSave")
-	public ModelAndView preSave(@RequestParam(value="id",required=false) String id) {
+	public ModelAndView preSave(@RequestParam(value="id", required=false) String id) {
 		ModelAndView mav = new ModelAndView();
 		mav.addObject("dateList", appointService.getDate());
 		mav.addObject("categoryList", categoryService.findByType("lab"));
@@ -174,5 +179,31 @@ public class AppointmentController {
 	@RequestMapping("/json/date")
 	public @ResponseBody List<String> getDate() {
 		return appointService.getDate();
+	}
+	
+	@RequestMapping("/json/close")
+	public @ResponseBody Status close_json(@RequestParam(value="appointId", required=true) String appointId) {
+		Appointment appoint = appointService.findById(appointId);
+		appoint.setStatus("close");
+		boolean flag = HibernateUtils.merge(appoint);
+		flag = flag && orderService.close(appointId);
+		Status status = new Status();
+		if (flag) {
+			status.setStatus("success");
+			status.setMsg("关闭成功！");
+		} else {
+			status.setStatus("error");
+			status.setMsg("关闭失败！");
+		}
+		return status;
+	}
+	
+	@RequestMapping("/close")
+	public String close_page(@RequestParam(value="appointId", required=true) String appointId) {
+		Appointment appoint = appointService.findById(appointId);
+		appoint.setStatus("close");
+		HibernateUtils.merge(appoint);
+		orderService.close(appointId);
+		return "redirect:list.do";
 	}
 }

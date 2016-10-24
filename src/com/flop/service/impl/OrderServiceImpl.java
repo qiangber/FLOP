@@ -257,4 +257,23 @@ public class OrderServiceImpl implements OrderServiceInter {
 			return new Status("error", "已超过时限，无法取消！");
 		}
 	}
+	
+	@Override
+	public boolean close(String appointId) {
+		String hql = "from Order where appoint.id = ?";
+		String[] parameters = {appointId};
+		List<Order> orderList = HibernateUtils.executeQuery(hql, parameters);
+		boolean flag = true;
+		for (Order order : orderList) {
+			order.setStatus("close");
+			if (HibernateUtils.merge(order)) {
+				Notification notify = notificationService.find(order.getUserId(), Integer.toString(order.getId()));
+				notify.setHasRead("0");
+				notificationService.mergeNotification(notify);
+				notificationService.notifyUser(order.getUserId());
+				flag = flag && true;
+			}
+		}
+		return flag;
+	}
 }
