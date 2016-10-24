@@ -38,7 +38,7 @@ public class AppointServiceImpl implements AppointServiceInter {
 			} else if (type.equals("speaking")) {
 				hql = "select distinct a.userInfo from SpeakingAppointment a";
 			}
-			hql = hql.concat(" where a.date >= ?");
+			hql = hql.concat(" where a.date >= ? and a.status != 'close'");
 			list = session.createQuery(hql).setDate(0, new Date()).list();			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -64,7 +64,7 @@ public class AppointServiceImpl implements AppointServiceInter {
 				hql = "select distinct a.category from LabAppointment a where a.userInfo.id = ?";
 				teacherId = "1";
 			}
-			hql = hql.concat(" and a.date >= ?");
+			hql = hql.concat(" and a.date >= ? and a.status != 'close'");
 			session = HibernateUtils.openSession();		
 			list = session.createQuery(hql).setString(0, teacherId)
 					.setDate(1, new Date()).list();			
@@ -87,7 +87,7 @@ public class AppointServiceImpl implements AppointServiceInter {
 				teacherId = "1";
 			}
 			String hql = "from Appointment where type = ? and category.id = ? and userInfo.id = ?"
-					+ " and date >= ? order by date, lesson";
+					+ " and date >= ? and status != 'close' order by date, lesson";
 			session = HibernateUtils.openSession();
 			appoints = session.createQuery(hql).setString(0, type).setString(1, categoryId)
 					.setString(2, teacherId).setDate(3, new Date()).list();			

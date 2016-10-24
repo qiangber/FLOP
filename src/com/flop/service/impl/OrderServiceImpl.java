@@ -268,9 +268,16 @@ public class OrderServiceImpl implements OrderServiceInter {
 			order.setStatus("close");
 			if (HibernateUtils.merge(order)) {
 				Notification notify = notificationService.find(order.getUserId(), Integer.toString(order.getId()));
-				notify.setHasRead("0");
-				notificationService.mergeNotification(notify);
-				notificationService.notifyUser(order.getUserId());
+				if (notify != null) {
+					notify.setHasRead("0");
+					notificationService.mergeNotification(notify);
+				} else {
+					notify = new Notification(
+							new Date(), Notification.ORDER_CLIENT,
+							"0", order.getUserId(), order);
+					notificationService.addNotification(notify);
+				}
+				notificationService.notifyUser(order.getUserId());					
 				flag = flag && true;
 			}
 		}

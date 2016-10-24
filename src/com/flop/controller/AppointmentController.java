@@ -198,7 +198,7 @@ public class AppointmentController {
 		return status;
 	}
 	
-	@RequestMapping("/close")
+	@RequestMapping(value="/close", method=RequestMethod.POST)
 	public String close_page(@RequestParam(value="appointId", required=true) String appointId) {
 		Appointment appoint = appointService.findById(appointId);
 		appoint.setStatus("close");
