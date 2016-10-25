@@ -25,7 +25,7 @@ public class HibernateUtils {
 		sessionFactory = configuration.buildSessionFactory(serviceRegistry);
 	}
 
-	// 获取全新的全新的sesession
+	// 获取全新的全新的session
 	public static Session openSession() {
 		return sessionFactory.openSession();
 	}
