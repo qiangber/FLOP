@@ -70,9 +70,10 @@ public class AppointServiceImpl implements AppointServiceInter {
 			hql = hql.concat(" and a.date >= ? and a.date <= ? and a.status != 'close'");
 			session = HibernateUtils.openSession();
 			DateTime today = new DateTime();
+			int end = type.equals("lab") ? 30 : 7;
 			list = session.createQuery(hql).setString(0, teacherId)
 					.setDate(1, today.plusDays(2).toDate())
-					.setDate(2, today.plusDays(7).toDate()).list();			
+					.setDate(2, today.plusDays(end).toDate()).list();			
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
@@ -92,13 +93,14 @@ public class AppointServiceImpl implements AppointServiceInter {
 				teacherId = "1";
 			}
 			String hql = "from Appointment where type = ? and category.id = ? and userInfo.id = ?"
-					+ " and date >= ? and a.date <= ? and status != 'close' order by date, lesson";
+					+ " and date >= ? and date <= ? and status != 'close' order by date, lesson";
 			session = HibernateUtils.openSession();
 			DateTime today = new DateTime();
+			int end = type.equals("lab") ? 30 : 7;
 			appoints = session.createQuery(hql).setString(0, type).setString(1, categoryId)
 					.setString(2, teacherId)
 					.setDate(3, today.plusDays(2).toDate())
-					.setDate(4, today.plusDays(7).toDate())
+					.setDate(4, today.plusDays(end).toDate())
 					.list();			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -125,7 +127,7 @@ public class AppointServiceImpl implements AppointServiceInter {
 		try {
 			session = HibernateUtils.openSession();
 			String hql = "from Appointment where userInfo.id = ? and type = ? and date >= ? "
-					+ "order by date, lesson";		
+					+ "and status != 'close' order by date, lesson";		
 			list = session.createQuery(hql)
 					.setString(0, userId).setString(1, type).setDate(2, new Date()).list();			
 		} catch (Exception e) {
@@ -145,7 +147,7 @@ public class AppointServiceImpl implements AppointServiceInter {
 		try {
 			session = HibernateUtils.openSession();
 			String hql = "from Appointment where userInfo.id = ? and type = ? and date >= ? "
-					+ "order by date, lesson";		
+					+ "and status != 'close' order by date, lesson";		
 			list = session.createQuery(hql)
 					.setString(0, userId).setString(1, type).setDate(2, new Date())
 					.setFirstResult((pageNow - 1) * pageSize).setMaxResults(pageSize).list();			
@@ -165,10 +167,20 @@ public class AppointServiceImpl implements AppointServiceInter {
 		String flag = "false";
 		try {
 			session = HibernateUtils.openSession();
-			String hql="from Appointment where date = ? and lesson = ? and userInfo.id = ?";
-			List<Appointment> appointList = (List<Appointment>)session.createQuery(hql).setDate(0, appoint.getDate())
-					.setInteger(1, appoint.getLesson())
-					.setString(2, appoint.getUserId()).list();
+			String hql;
+			List<Appointment> appointList;
+			if (appoint.getUserId().equals("1")) {
+				hql = "from Appointment where date = ? and lesson = ? and userId = ? and categoryId = ? and status != 'close'";
+				appointList = (List<Appointment>)session.createQuery(hql).setDate(0, appoint.getDate())
+						.setInteger(1, appoint.getLesson())
+						.setString(2, appoint.getUserId())
+						.setString(3, appoint.getCategoryId()).list();
+			} else {
+				hql = "from Appointment where date = ? and lesson = ? and userId = ? and status != 'close'";
+				appointList = (List<Appointment>)session.createQuery(hql).setDate(0, appoint.getDate())
+						.setInteger(1, appoint.getLesson())
+						.setString(2, appoint.getUserId()).list();				
+			}
 			if (appointList.size() > 0) {
 				flag = appointList.get(0).getCategory().getType();
 			} else {
@@ -191,21 +203,21 @@ public class AppointServiceImpl implements AppointServiceInter {
 		if (status.equals("false")) {
 			obj.setUserInfo(userService.findById(obj.getUserId()).getUserInfo());
 			obj.setCategory(categoryService.findById(obj.getCategoryId()));
-			return HibernateUtils.save(obj) == true ? "success" : "error";			
+			return HibernateUtils.save(obj) ? "success" : "error";			
 		} else {
 			return status;
 		}
 	}
 
 	@Override
-	public int getPageCount(int pageSize) {
+	public int getPageCount(String userId, String type, int pageSize) {
 		Session session = null;
 		int rowCount = 0;
 		try {
 			session = HibernateUtils.openSession();;
 			String hql = "select count(*) from Appointment where userInfo.id = ? and type = ? and date >= ?";		
 			Object object = session.createQuery(hql)
-					.setString(0, "1").setString(1, "lab").setDate(2, new Date()).uniqueResult();
+					.setString(0, userId).setString(1, type).setDate(2, new Date()).uniqueResult();
 			rowCount = Integer.parseInt(object.toString());						
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -214,7 +226,7 @@ public class AppointServiceImpl implements AppointServiceInter {
 				session.close();
 			}
 		}
-		return (rowCount-1)/pageSize+1  ;
+		return (rowCount-1) / pageSize + 1  ;
 	}
 	
 	@Override

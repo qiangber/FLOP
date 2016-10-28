@@ -99,7 +99,7 @@ public class OrderServiceImpl implements OrderServiceInter {
 			hql = hql.concat(" and appoint.date >= ? order by appoint.date, appoint.lesson");
 			List<Order> orders = session.createQuery(hql).setString(0, userId).setDate(1, new Date())
 					.setFirstResult((pageNow - 1) * pageSize).setMaxResults(pageSize).list();
-			map = new HashMap<String, Object>();
+			map = new HashMap<String, Object>(2);
 			map.put("orders", orders);
 			map.put("pageCount", getPageCount(pageSize, type, userId)+"");
 		} catch (Exception e) {

@@ -101,6 +101,15 @@
 										<c:when test="${order.status == 'accept'}">
 											<td>成功</td>
 										</c:when>
+										<c:when test="${order.status == 'cancel'}">
+											<td>被取消</td>
+										</c:when>
+										<c:when test="${order.status == 'close'}">
+											<td>已关闭</td>
+										</c:when>
+										<c:when test="${order.status == 'open'}">
+											<td>预约中</td>
+										</c:when>
 										<c:otherwise>
 											<td>失败</td>
 										</c:otherwise>

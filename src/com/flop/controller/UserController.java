@@ -87,7 +87,7 @@ public class UserController {
 			UserInfo currentUser = userService.CheckAdminUser(user);
 			if(currentUser != null){
 				request.getSession().setAttribute("adminuser", currentUser);
-				mav.setViewName("redirect:/news/list.do");
+				mav.setViewName("redirect:/order/listToDeal.do");
 			} else {
 				request.getSession().setAttribute("loginError", "用户名或者密码错误！");
 				mav.setViewName("redirect:/admin/");

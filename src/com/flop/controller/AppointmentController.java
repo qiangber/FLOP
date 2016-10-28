@@ -4,10 +4,15 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -45,6 +50,10 @@ public class AppointmentController {
 	public @ResponseBody Status add(HttpServletRequest request,
 			@RequestParam(value="lessons", required=true) String[] lessons,
 			@RequestParam(value="categoryId", required=true) String categoryId) throws ParseException {
+		DateTime date = DateTime.parse(request.getParameter("date"), DateTimeFormat.forPattern("yyyy/MM/dd"));
+		if (date.plusDays(-1).isBeforeNow()) {
+			return new Status("error", "请选择两天后的日期！");
+		}
 		String type = request.getParameter("type");
 		Appointment appoint;
 		if (type.equals("writing")) {
@@ -52,7 +61,7 @@ public class AppointmentController {
 		} else {
 			appoint = new SpeakingAppointment();
 		}
-		appoint.setDate(new SimpleDateFormat("yyyy/MM/dd").parse(request.getParameter("date")));
+		appoint.setDate(date.toDate());
 		appoint.setCategoryId(categoryId);
 		appoint.setPublishTime(new Date());
 		appoint.setType(type);
@@ -112,30 +121,39 @@ public class AppointmentController {
     }
 	
 	@RequestMapping(value="/save", method=RequestMethod.POST)
-	public String add(LabAppointment appoint,
+	public ModelAndView add(LabAppointment appoint,
 			@RequestParam(value="lessons") String[] lessons) throws ParseException {
+		DateTime date = new DateTime(appoint.getDate());
+		if (date.plusDays(-1).isBeforeNow()) {
+			return new ModelAndView("redirect:preSave.do", "error", "请选择两天后的日期！");
+		}
 		appoint.setPublishTime(new Date());
 		appoint.setType("lab");
 		appoint.setUserId("1");
+		String flag;
 		for (String lesson : lessons) {
 			appoint.setLesson(Integer.parseInt(lesson));
 			appointService.add(appoint);
 		}
-		return "redirect:list.do";
+		return new ModelAndView("redirect:list.do");
 	}
 	
 	@RequestMapping("/json/list")
-	public @ResponseBody List<Appointment> list(
+	public @ResponseBody Map<String, Object> list(
 			@RequestParam(value="userId", required=true) String userId,
-			@RequestParam(value="type",required=true) String type) {
-		return appointService.findByUserIdAndType(userId, type);
+			@RequestParam(value="type", required=true) String type,
+			@RequestParam(value="page", required=false,  defaultValue="1") int page) {
+		Map<String, Object> map = new HashMap<>(2);
+		map.put("pageCount", appointService.getPageCount(userId, type, 10));
+		map.put("appoints", appointService.findByUserIdAndType(userId, type, 10, page));
+		return map;
 	}
 	
 	@RequestMapping("/list")
 	public ModelAndView listLab(@RequestParam(value="page", required=false, defaultValue="1") int page) {
 		ModelAndView mav = new ModelAndView();
 		mav.addObject("appointList", appointService.findByUserIdAndType("1", "lab", 15, page));		
-		mav.addObject("pageCount", appointService.getPageCount(15));
+		mav.addObject("pageCount", appointService.getPageCount("1", "lab", 15));
 		mav.addObject("currentPage", page);
 		mav.setViewName("appointList");
 		return mav;
@@ -181,7 +199,7 @@ public class AppointmentController {
 		return appointService.getDate();
 	}
 	
-	@RequestMapping("/json/close")
+	@RequestMapping(value="/json/close", method=RequestMethod.POST)
 	public @ResponseBody Status close_json(@RequestParam(value="appointId", required=true) String appointId) {
 		Appointment appoint = appointService.findById(appointId);
 		appoint.setStatus("close");
@@ -198,7 +216,7 @@ public class AppointmentController {
 		return status;
 	}
 	
-	@RequestMapping(value="/close", method=RequestMethod.POST)
+	@RequestMapping(value="/close")
 	public String close_page(@RequestParam(value="appointId", required=true) String appointId) {
 		Appointment appoint = appointService.findById(appointId);
 		appoint.setStatus("close");

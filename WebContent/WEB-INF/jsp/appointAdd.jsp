@@ -11,7 +11,9 @@
 <link rel="stylesheet" type="text/css" href="/FLOP/resources/css/common.css" />
 <link rel="stylesheet" type="text/css" href="/FLOP/resources/css/adminNews.css" />
 <link rel="shortcut icon" href="/FLOP/resources/images/favicon.ico" />
-<script type="text/javascript" src="/FLOP/resources/js/jquery-1.6.1.min.js"></script>
+<script type="text/javascript" src="/FLOP/resources/jedate/jquery-1.7.2.js"></script>
+<script type="text/javascript" src="/FLOP/resources/jedate/jquery.jedate.min.js"></script>
+<link type="text/css" rel="stylesheet" href="/FLOP/resources/jedate/skin/jedate.css">
 </head>
 
 <body>
@@ -64,11 +66,12 @@
 									<span style="font-size: 15px;">日期</span>
 								</div>
 								<div class="leftInput">
-									<select name="date" style="width:100px;">
+									<input type="text" id="datepicker" name="date" placeholder="请选择日期" readOnly="true" />
+									<%-- <select name="date" style="width:100px;">
 										<c:forEach var="date" items="${dateList}">
 											<option value="${date}">${date}</option>
 										</c:forEach>
-									</select>
+									</select> --%>
 								</div>
 							</div>
 							
@@ -129,6 +132,15 @@ function onsubmitCheck() {
 		return false;
 	}
 }
+$("#datepicker").jeDate({
+    isinitVal:false,
+    festival:true,
+    ishmsVal:false,
+    minDate: $.nowDate(2),
+    maxDate: '2099-06-16',
+    format:"YYYY/MM/DD",
+    zIndex:3000,
+})
 //用户注销函数
 function logOut() {
 	var isLogOut = confirm("您要注销登录吗？");

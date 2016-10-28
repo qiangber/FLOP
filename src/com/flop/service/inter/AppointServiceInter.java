@@ -19,6 +19,6 @@ public interface AppointServiceInter {
 	public List<Appointment> findByUserIdAndType(String userId, String type);
 	public List<Appointment> findByUserIdAndType(String userId, String type, int pageSize ,int pageNow);
 	public String add(Appointment obj);
-	public int getPageCount(int pageSize);
+	public int getPageCount(String userId, String type, int pageSize);
 	public List<String> getDate(); 
 }
