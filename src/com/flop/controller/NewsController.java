@@ -3,6 +3,7 @@ package com.flop.controller;
 import java.util.Date;
 import java.util.List;
 
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -62,7 +63,7 @@ public class NewsController {
 	
 	@RequestMapping("/save")
 	public String save(News news) {
-		news.setDate(new Date());
+		news.setDate(new DateTime().toString("YYYY-MM-dd HH:mm:ss"));
 		if (news.getId() != 0) {
 			newsService.update(news);
 		} else {

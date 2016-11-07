@@ -9,7 +9,7 @@
 		<id name="id" column="id">
 			<generator class="native"></generator>
 		</id>
-		<property name="time" type="date"></property>
+		<property name="time" length="20"></property>
 		<property name="status" length="20"></property>
 		<property name="userId" length="20"></property>
 		<property name="title"></property>

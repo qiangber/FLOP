@@ -1,7 +1,6 @@
 package com.flop.controller;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -12,7 +11,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -64,7 +62,7 @@ public class AppointmentController {
 		appoint.setType(type);
 		appoint.setDate(date.toDate());
 		appoint.setCategoryId(categoryId);
-		appoint.setPublishTime(new Date());
+		appoint.setPublishTime(new DateTime().toString("YYYY-MM-dd HH:mm:ss"));
 		appoint.setUserId(request.getParameter("userId"));
 		appoint.setPlace(request.getParameter("place"));
 		boolean flag = true;
@@ -128,7 +126,7 @@ public class AppointmentController {
 		if (date.plusDays(-1).isBeforeNow()) {
 			return new ModelAndView("redirect:preSave.do", "error", "请选择两天后的日期！");
 		}
-		appoint.setPublishTime(new Date());
+		appoint.setPublishTime(new DateTime().toString("YYYY-MM-dd HH:mm:ss"));
 		appoint.setType("lab");
 		appoint.setUserId("1");
 		for (String lesson : lessons) {

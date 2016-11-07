@@ -15,7 +15,7 @@
 		<property name="lesson" length="20"></property>
 		<property name="userId" length="20"></property>
 		<property name="categoryId" length="20"></property>
-		<property name="publishTime" type="date"></property>
+		<property name="publishTime" length="20"></property>
 		<property name="status" type="string" length="20"></property>
 		<property name="place" type="string" length="40"></property>
 		

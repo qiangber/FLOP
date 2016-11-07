@@ -11,6 +11,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.io.FileUtils;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -103,7 +104,7 @@ public class OrderController {
 		order.setUserId(userId);
 		order.setTitle(title);
 		order.setContent(content);
-		order.setTime(new Date());
+		order.setTime(new DateTime().toString("YYYY-MM-dd HH:mm:ss"));
 		order.setStatus("verify");
 		boolean flag = true;
 		List<String> slist = new ArrayList<String>();

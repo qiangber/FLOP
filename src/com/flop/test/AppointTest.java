@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.hibernate.Session;
+import org.joda.time.DateTime;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -42,10 +43,10 @@ public class AppointTest {
 	public void testSave() {
 		SpeakingAppointment a = new SpeakingAppointment();
 		a.setDate(new Date());
-		a.setLesson(6);
+		a.setLesson(7);
 		a.setUserId("20");
 		a.setCategoryId("1");
-		a.setPublishTime(new Date());
+		a.setPublishTime(new DateTime().toString("YYYY-MM-dd HH:mm:ss"));
 		a.setPlace("kb212");
 		appointService.add(a);
 	}

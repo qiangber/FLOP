@@ -1,9 +1,14 @@
 package com.flop.test;
 
 import org.hibernate.Session;
+import org.joda.time.DateTime;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.flop.model.About;
 import com.flop.model.Appointment;
@@ -18,9 +23,14 @@ import com.flop.service.inter.AppointServiceInter;
 import com.flop.service.inter.OrderServiceInter;
 import com.flop.utils.HibernateUtils;
 
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration({"classpath:spring-mvc.xml"})
 public class OrderTest {
 	
 	private Session session;
+	
+	@Autowired
+	private OrderServiceInter orderService;
 	
 	@Before
 	public void setUp() throws Exception {
@@ -40,5 +50,15 @@ public class OrderTest {
 		Order order = orderService.findById("152");
 		orderService.delete("152");
 		System.out.println(order.getId());
+	}
+	
+	@Test
+	public void save() {
+		Order order = new Order();
+		order.setUserId("20");
+		order.setTime(new DateTime().toString("YYYY-MM-dd HH:mm:ss"));
+		order.setStatus("verify");
+		order.setAppointmentId("287");
+		orderService.add(order);
 	}
 }

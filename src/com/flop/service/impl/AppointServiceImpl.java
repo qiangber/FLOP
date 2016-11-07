@@ -160,7 +160,7 @@ public class AppointServiceImpl implements AppointServiceInter {
 		try {
 			session = HibernateUtils.openSession();
 			String hql = "from Appointment where userInfo.id = ? and type = ? and date >= ? "
-					+ "and status != 'close' order by date, lesson";		
+					+ "and status != 'close' order by publishTime desc";		
 			list = session.createQuery(hql)
 					.setString(0, userId).setString(1, type).setDate(2, new Date())
 					.setFirstResult((pageNow - 1) * pageSize).setMaxResults(pageSize).list();			
@@ -228,7 +228,7 @@ public class AppointServiceImpl implements AppointServiceInter {
 		int rowCount = 0;
 		try {
 			session = HibernateUtils.openSession();;
-			String hql = "select count(*) from Appointment where userInfo.id = ? and type = ? and date >= ?";		
+			String hql = "select count(*) from Appointment where userInfo.id = ? and type = ? and date >= ? and status != 'close'";		
 			Object object = session.createQuery(hql)
 					.setString(0, userId).setString(1, type).setDate(2, new Date()).uniqueResult();
 			rowCount = Integer.parseInt(object.toString());						

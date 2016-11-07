@@ -1,9 +1,11 @@
 package com.flop.test;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
 import org.hibernate.Session;
+import org.joda.time.DateTime;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,7 +32,7 @@ public class NewsTest {
 	
 	@Test
 	public void testSaveNews() {
-		News news = new News("title2", "content2", new Date());		 
+		News news = new News("title2", "content2", new DateTime().toString("YYYY-MM-dd HH:mm:ss"));		 
 		session.save(news);
 	}
 	
@@ -42,5 +44,10 @@ public class NewsTest {
 		for (News news : list) {
 			System.out.println(news.getTitle());
 		}
+	}
+	
+	@Test
+	public void testDate() {
+		System.out.println(new DateTime().toString("YYYY-MM-dd HH:mm:ss"));
 	}
 }

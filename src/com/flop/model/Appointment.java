@@ -7,7 +7,7 @@ public class Appointment {
 	private String type;
 	private Date date;
 	private int lesson;
-	private Date publishTime;
+	private String publishTime;
 	private String categoryId;
 	private Category category;
 	private String userId;
@@ -38,10 +38,10 @@ public class Appointment {
 	public void setLesson(int lesson) {
 		this.lesson = lesson;
 	}
-	public Date getPublishTime() {
+	public String getPublishTime() {
 		return publishTime;
 	}
-	public void setPublishTime(Date publishTime) {
+	public void setPublishTime(String publishTime) {
 		this.publishTime = publishTime;
 	}
 	public String getUserId() {

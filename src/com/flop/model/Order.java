@@ -6,7 +6,7 @@ public class Order {
 	private int id;
 	private String userId;
 	private UserInfo userInfo;
-	private Date time;
+	private String time;
 	private String status;
 	private String appointmentId;
 	private Appointment appoint;
@@ -30,10 +30,10 @@ public class Order {
 	public void setId(int id) {
 		this.id = id;
 	}
-	public Date getTime() {
+	public String getTime() {
 		return time;
 	}
-	public void setTime(Date time) {
+	public void setTime(String time) {
 		this.time = time;
 	}
 	public String getStatus() {

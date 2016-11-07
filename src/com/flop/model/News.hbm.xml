@@ -11,7 +11,7 @@
 		</id>
         <property name="title" length="50"></property>
         <property name="content" type="text"></property>
-        <property name="date" type="date"></property>
+        <property name="date" length="20"></property>
 	</class>
 
 </hibernate-mapping>

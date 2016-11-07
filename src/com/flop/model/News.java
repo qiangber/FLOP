@@ -1,19 +1,17 @@
 package com.flop.model;
 
-import java.util.Date;
-
 public class News {
 	
 	private int id;
 	private String title;
 	private String content;
-	private Date date; 
+	private String date; 
 	
 	public News() {
 		
 	}
 	
-	public News(String title, String content, Date date) {
+	public News(String title, String content, String date) {
 		super();
 		this.title = title;
 		this.content = content;
@@ -38,11 +36,11 @@ public class News {
 		this.content = content;
 	}
 
-	public Date getDate() {
+	public String getDate() {
 		return date;
 	}
 
-	public void setDate(Date date) {
+	public void setDate(String date) {
 		this.date = date;
 	}	
 }
