@@ -11,7 +11,7 @@ import com.flop.model.UserInfo;
 @Service
 public interface AppointServiceInter {
 	
-	public List<UserInfo> findTeacher(String type);
+	public List<UserInfo> findTeacher(String type, String categoryId);
 	public List<Category> findCategory(String type, String teacherId);
 	public List<Appointment> findAppoint(String type, String teacherId, String categoryId);
 	public Appointment findById(String id);

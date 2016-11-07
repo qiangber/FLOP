@@ -17,6 +17,7 @@
 		<property name="categoryId" length="20"></property>
 		<property name="publishTime" type="date"></property>
 		<property name="status" type="string" length="20"></property>
+		<property name="place" type="string" length="40"></property>
 		
 		<many-to-one name="userInfo" column="user" class="com.flop.model.UserInfo" lazy="false"></many-to-one>
 		<many-to-one name="category" column="category" class="com.flop.model.Category" lazy="false"></many-to-one>

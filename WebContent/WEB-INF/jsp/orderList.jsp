@@ -93,10 +93,10 @@
 								<c:forEach var="order" items="${orderList}">
 								<tr>
 									<td>${order.time}</td>
-									<td>${order.userInfo.name}</td>
+									<td>${order.userInfo.name}(${order.userInfo.username})</td>
 									<td>${order.appoint.category.name}</td>
 									<td>${order.appoint.date},第${order.appoint.lesson}节</td>
-									<td>${order.appoint.userInfo.name}</td>
+									<td>${order.appoint.userInfo.name}(${order.appoint.userInfo.username})</td>
 									<c:choose>
 										<c:when test="${order.status == 'accept'}">
 											<td>成功</td>

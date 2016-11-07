@@ -13,6 +13,7 @@ public class Appointment {
 	private String userId;
 	private UserInfo userInfo;
 	private String status = "open";
+	private String place;
 	public int getId() {
 		return id;
 	}
@@ -72,5 +73,11 @@ public class Appointment {
 	}
 	public void setStatus(String status) {
 		this.status = status;
+	}
+	public String getPlace() {
+		return place;
+	}
+	public void setPlace(String place) {
+		this.place = place;
 	}
 }

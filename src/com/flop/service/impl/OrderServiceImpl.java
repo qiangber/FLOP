@@ -96,7 +96,7 @@ public class OrderServiceImpl implements OrderServiceInter {
 			} else if (type.equals("speaking")) {
 				hql = "from Order where appoint.userInfo.id = ? and appoint.class = SpeakingAppointment";			
 			}
-			hql = hql.concat(" and appoint.date >= ? order by appoint.date, appoint.lesson");
+			hql = hql.concat(" and appoint.status != 'close' and appoint.date >= ? order by appoint.date, appoint.lesson");
 			List<Order> orders = session.createQuery(hql).setString(0, userId).setDate(1, new Date())
 					.setFirstResult((pageNow - 1) * pageSize).setMaxResults(pageSize).list();
 			map = new HashMap<String, Object>(2);
@@ -120,7 +120,7 @@ public class OrderServiceImpl implements OrderServiceInter {
 		try {
 			session = HibernateUtils.openSession();;
 			String hql = "from Order where appoint.class = LabAppointment"
-					+ " and appoint.date >= ? and status != 'cancel'"
+					+ " and appoint.status != 'close' and appoint.date >= ? and status != 'cancel'"
 					+ " order by appoint.date, appoint.lesson";
 			labOrders = session.createQuery(hql).setDate(0, new Date())
 					.setFirstResult((pageNow-1)*pageSize).setMaxResults(pageSize).list();			

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +28,7 @@ public class AppointServiceImpl implements AppointServiceInter {
 	private CategoryServiceInter categoryService;
 	
 	@Override
-	public List<UserInfo> findTeacher(String type) {
+	public List<UserInfo> findTeacher(String type, String categoryId) {
 		Session session = null;
 		List<UserInfo> list = new ArrayList<UserInfo>();
 		try {
@@ -38,11 +39,17 @@ public class AppointServiceImpl implements AppointServiceInter {
 			} else if (type.equals("speaking")) {
 				hql = "select distinct a.userInfo from SpeakingAppointment a";
 			}
-			hql = hql.concat(" where a.date >= ? and a.date <= ? and a.status != 'close'");
-			DateTime today = new DateTime(); 
-			list = session.createQuery(hql)
-					.setDate(0, today.plusDays(2).toDate())
-					.setDate(1, today.plusDays(7).toDate()).list();			
+			hql = hql.concat(" where a.date >= :start and a.date <= :end and a.status != 'close'");				
+			if (categoryId != null && !categoryId.equals("")) {
+				hql = hql.concat(" and a.categoryId = :categoryId");
+			}
+			DateTime today = new DateTime();
+			Query query = session.createQuery(hql);
+			query.setDate("start", today.plusDays(2).toDate()).setDate("end", today.plusDays(7).toDate());
+			if (categoryId != null && !categoryId.equals("")) {
+				query.setParameter("categoryId", categoryId);
+			}
+			list = query.list();			
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
@@ -60,20 +67,26 @@ public class AppointServiceImpl implements AppointServiceInter {
 		try {
 			String hql = "";
 			if (type.equals("writing")) {			
-				hql = "select distinct a.category from WritingAppointment a where a.userInfo.id = ?";
+				hql = "select distinct a.category from WritingAppointment a";
 			} else if (type.equals("speaking")) {
-				hql = "select distinct a.category from SpeakingAppointment a where a.userInfo.id = ?";
+				hql = "select distinct a.category from SpeakingAppointment a";
 			} else if (type.equals("lab")) {
-				hql = "select distinct a.category from LabAppointment a where a.userInfo.id = ?";
+				hql = "select distinct a.category from LabAppointment a";
 				teacherId = "1";
 			}
-			hql = hql.concat(" and a.date >= ? and a.date <= ? and a.status != 'close'");
+			hql = hql.concat(" where a.date >= :start and a.date <= :end and a.status != 'close'");
+			if (teacherId != null && !teacherId.equals("")) {
+				hql = hql.concat(" and a.userId = :teacherId");
+			}
 			session = HibernateUtils.openSession();
 			DateTime today = new DateTime();
 			int end = type.equals("lab") ? 30 : 7;
-			list = session.createQuery(hql).setString(0, teacherId)
-					.setDate(1, today.plusDays(2).toDate())
-					.setDate(2, today.plusDays(end).toDate()).list();			
+			Query query = session.createQuery(hql);
+			query.setDate("start", today.plusDays(2).toDate()).setDate("end", today.plusDays(end).toDate());
+			if (teacherId != null && !teacherId.equals("")) {
+				query.setString("teacherId", teacherId);
+			}			
+			list = query.list();			
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
@@ -92,15 +105,15 @@ public class AppointServiceImpl implements AppointServiceInter {
 			if (type.equals("lab")) {
 				teacherId = "1";
 			}
-			String hql = "from Appointment where type = ? and category.id = ? and userInfo.id = ?"
-					+ " and date >= ? and date <= ? and status != 'close' order by date, lesson";
+			String hql = "from Appointment where type = :type and category.id = :categoryId and userInfo.id = :teacherId"
+					+ " and date >= :start and date <= :end and status != 'close' order by date, lesson";
 			session = HibernateUtils.openSession();
 			DateTime today = new DateTime();
 			int end = type.equals("lab") ? 30 : 7;
-			appoints = session.createQuery(hql).setString(0, type).setString(1, categoryId)
-					.setString(2, teacherId)
-					.setDate(3, today.plusDays(2).toDate())
-					.setDate(4, today.plusDays(end).toDate())
+			appoints = session.createQuery(hql).setString("type", type).setString("categoryId", categoryId)
+					.setString("teacherId", teacherId)
+					.setDate("start", today.plusDays(2).toDate())
+					.setDate("end", today.plusDays(end).toDate())
 					.list();			
 		} catch (Exception e) {
 			e.printStackTrace();

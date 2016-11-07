@@ -61,11 +61,12 @@ public class AppointmentController {
 		} else {
 			appoint = new SpeakingAppointment();
 		}
+		appoint.setType(type);
 		appoint.setDate(date.toDate());
 		appoint.setCategoryId(categoryId);
 		appoint.setPublishTime(new Date());
-		appoint.setType(type);
 		appoint.setUserId(request.getParameter("userId"));
+		appoint.setPlace(request.getParameter("place"));
 		boolean flag = true;
 		List<String> slist = new ArrayList<String>();
 		List<String> elist = new ArrayList<String>();
@@ -130,7 +131,6 @@ public class AppointmentController {
 		appoint.setPublishTime(new Date());
 		appoint.setType("lab");
 		appoint.setUserId("1");
-		String flag;
 		for (String lesson : lessons) {
 			appoint.setLesson(Integer.parseInt(lesson));
 			appointService.add(appoint);
@@ -161,8 +161,9 @@ public class AppointmentController {
 	
 	@RequestMapping("/json/teacher")
 	public @ResponseBody List<UserInfo> listTeacher(
-			@RequestParam(value="type", required=true) String type) {
-		return appointService.findTeacher(type);
+			@RequestParam(value="type", required=true) String type,
+			@RequestParam(value="categoryId",required=false) String categoryId) {
+		return appointService.findTeacher(type, categoryId);
 	}
 	
 	@RequestMapping("/json/category")

@@ -7,22 +7,29 @@ import org.hibernate.Session;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.flop.model.Category;
-import com.flop.model.User;
-import com.flop.model.WritingAppointment;
+import com.flop.model.SpeakingAppointment;
 import com.flop.service.impl.AppointServiceImpl;
 import com.flop.service.inter.AppointServiceInter;
 import com.flop.utils.HibernateUtils;
 
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration({"classpath:spring-mvc.xml"})
 public class AppointTest {
 	
 	private Session session;
 	
+	@Autowired
+	private AppointServiceInter appointService;
+	
 	@Before
 	public void setUp() throws Exception {
-		 session = HibernateUtils.openSession(); // 生成一个session
-		 session.beginTransaction();
+		session = HibernateUtils.openSession(); // 生成一个session
+		session.beginTransaction();
 	}
 
 	@After
@@ -33,12 +40,14 @@ public class AppointTest {
 	
 	@Test
 	public void testSave() {
-		WritingAppointment a = new WritingAppointment();
-		a.setUserInfo(((User)session.get(User.class, 20)).getUserInfo());
-		a.setCategory((Category)session.get(Category.class, 1));
+		SpeakingAppointment a = new SpeakingAppointment();
 		a.setDate(new Date());
-		a.setLesson(4);
-		session.merge(a);		
+		a.setLesson(6);
+		a.setUserId("20");
+		a.setCategoryId("1");
+		a.setPublishTime(new Date());
+		a.setPlace("kb212");
+		appointService.add(a);
 	}
 	
 	@Test

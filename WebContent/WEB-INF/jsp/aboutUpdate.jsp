@@ -12,6 +12,11 @@
 <link rel="stylesheet" type="text/css" href="/FLOP/resources/css/adminNews.css" />
 <link rel="shortcut icon" href="/FLOP/resources/images/favicon.ico" />
 <script type="text/javascript" src="/FLOP/resources/js/jquery-1.6.1.min.js"></script>
+<!-- ueditor配置文件 -->
+<script type="text/javascript" charset="utf-8" src="/FLOP/resources/ueditor1_4_3-utf8-jsp/ueditor.config.js"></script>
+<!-- ueditor源码文件 -->
+<script type="text/javascript" charset="utf-8" src="/FLOP/resources/ueditor1_4_3-utf8-jsp/ueditor.all.min.js"></script>
+<script type="text/javascript" src="/FLOP/resources/ueditor1_4_3-utf8-jsp/lang/zh-cn/zh-cn.js"></script>
 </head>
 
 <body>
@@ -29,7 +34,7 @@
 		<div id="left">
 			<div class="funcbox">
 				<ul>
-					<li class="now"><a href="${pageContext.request.contextPath}/news/list.do">公示公告</a></li>
+					<li><a href="${pageContext.request.contextPath}/news/list.do">公示公告</a></li>
 					<li><a href="${pageContext.request.contextPath}/appoint/list.do">实验室预约</a></li>
 					<li><a href="${pageContext.request.contextPath}/order/list.do">预约情况</a></li>
 					<li><a href="${pageContext.request.contextPath}/category/list.do">预约类型</a></li>
@@ -79,8 +84,9 @@
 									<span style="font-size: 15px;">详细内容</span>
 								</div>										
 								<div class="centerInput">
-									<textarea style="width: 690px; height: 800px; resize: none;"
-										name="content" id="newsContent">${about.content}</textarea>
+									<%-- <textarea style="width: 690px; height: 800px; resize: none;"
+										name="content" id="newsContent">${about.content}</textarea> --%>
+									<script type="text/plain" id="newsContent" style="width:710px;height:800px;" name="content">${about.content}</script>
 								</div>
 							</div>
 							<div style="text-align: center">
@@ -97,6 +103,14 @@
 </body>
 
 <script>
+//初始化UEditor
+var ue = UE.getEditor("newsContent", {toolbars: [[
+	'undo', 'redo', '|',
+	'bold', 'italic', 'underline', 'removeformat', 'formatmatch', 'autotypeset', 'blockquote', '|',
+	'forecolor', 'backcolor', 'insertorderedlist', 'insertunorderedlist', '|',
+	'fontfamily', 'fontsize', 'horizontal', 'spechars', '|',
+	'preview', 'searchreplace'
+]]});
 //用户注销函数
 function logOut() {
 	var isLogOut = confirm("您要注销登录吗？");

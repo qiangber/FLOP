@@ -75,7 +75,7 @@
 									<td>${appoint.category.name}</td>
 									<td>
 										<c:if test="${appoint.status == 'open'}">
-											<a href="close.do?appointId=${appoint.id}">关闭预约</a>										
+											<a href="close.do?appointId=${appoint.id}" onclick="return isClose();">关闭预约</a>										
 										</c:if>
 										<c:if test="${appoint.status == 'close'}">
 											<div id="status">已关闭</div>										
@@ -114,24 +114,9 @@ function logOut() {
 		document.outFrm.submit();
 	}
 }
-function isDelete() {
-	var isDelete = confirm("您确定要删除该条信息吗？");
-	return isDelete
-}
-function submitData() {
-	var searchTitle = document.getElementById("searchTitle").value;
-	var searchDate = document.getElementById("searchDate").value;
-	$.ajax({ url: "search.do",
-        type:"get",           
-        dataType:"application/x-www-form-urlencoded; charset=utf-8",
-        data: "title="+searchTitle,
-        success:function(data){ 
-            alert();
-      },
-      error: function (msg) {
-          $("#allNews").html(msg.responseText);
-      }
-        })
+function isClose() {
+	var isClose = confirm("您确定要关闭该预约吗？");
+	return isClose;
 }
 </script>
 </html>

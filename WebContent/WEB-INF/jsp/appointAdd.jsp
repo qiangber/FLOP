@@ -62,9 +62,9 @@
 					<div class="phone_pic" id="newsList0">
 						<form action="save.do" method="post" name="newsForm" id="newsForm" onsubmit="return onsubmitCheck();">
 							<div class="newsTitle">
-								<div class="underLine">
+								<!-- <div class="underLine">
 									<span style="font-size: 15px;">日期</span>
-								</div>
+								</div> -->
 								<div class="leftInput">
 									<input type="text" id="datepicker" name="date" placeholder="请选择日期" readOnly="true" />
 									<%-- <select name="date" style="width:100px;">
@@ -77,7 +77,7 @@
 							
 							<div class="newsTitle">
 								<div class="underLine">
-									<span style="font-size: 15px;">时段</span>
+									<!-- <span style="font-size: 15px;">时段</span> -->
 								</div>
 								<div class="leftInput">
 									<c:forEach var="i" begin="1" end="4">
@@ -92,7 +92,7 @@
 	
 							<div class="newsContent">
 								<div class="underLine">
-									<span style="font-size: 15px;">实验室</span>
+									<!-- <span style="font-size: 15px;">实验室</span> -->
 								</div>										
 								<div class="leftInput">
 									<c:forEach var="category" items="${categoryList}">
