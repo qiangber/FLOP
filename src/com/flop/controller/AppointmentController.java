@@ -90,15 +90,28 @@ public class AppointmentController {
 			return new Status("success", "添加成功！");
 		} else {
 			if (slist.size() > 0) {
-				return new Status("success", "第" + listToString(slist) + "节添加成功！"
-						+ (elist.size() > 0 ? "第" + listToString(elist) + "节设置失败！" : "")
-						+ (writinglist.size() > 0 ? "第" + listToString(writinglist) + "节已在写作预约设置！" : "")
-						+ (speakinglist.size() > 0 ? "第" + listToString(speakinglist) + "节已在口语预约设置！" : ""));		
+				return new Status("success", listToString(slist) + "添加成功！"
+						+ (elist.size() > 0 ? listToString(elist) + "设置失败！" : "")
+						+ (writinglist.size() > 0 ? listToString(writinglist) + "已在写作预约设置！" : "")
+						+ (speakinglist.size() > 0 ? listToString(speakinglist) + "已在口语预约设置！" : ""));		
 			} else {
-				return new Status("error", (elist.size() > 0 ? "第" + listToString(elist) + "节设置失败！" : "")
-						+ (writinglist.size() > 0 ? "第" + listToString(writinglist) + "节已在写作预约设置！" : "")
-						+ (speakinglist.size() > 0 ? "第" + listToString(speakinglist) + "节已在口语预约设置！" : ""));
+				return new Status("error", (elist.size() > 0 ? listToString(elist) + "设置失败！" : "")
+						+ (writinglist.size() > 0 ? listToString(writinglist) + "已在写作预约设置！" : "")
+						+ (speakinglist.size() > 0 ? listToString(speakinglist) + "已在口语预约设置！" : ""));
 			}
+		}
+	}
+	
+	private static String[] timeList = {
+			"8:30", "8:55", "9:20", "9:45", "10:20", "10:45", "11:10", "11:35",
+			"14:30", "14:55", "15:20", "15:45", "16:20", "16:45", "17:10", "17:35",
+			"19:30", "19:55", "20:20", "20:45", "21:10", "21:35"};
+	
+	private static Map<String, String> map = new HashMap<String, String>();
+	
+	static {
+		for (int i = 0; i < timeList.length; i++) {
+			map.put(i + 1 + "", timeList[i]);
 		}
 	}
 	
@@ -114,7 +127,7 @@ public class AppointmentController {
             }else {
                 flag = true;
             }
-            result.append(string);
+            result.append(map.get(string));
         }
         return result.toString();
     }

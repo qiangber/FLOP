@@ -80,11 +80,11 @@
 									<!-- <span style="font-size: 15px;">时段</span> -->
 								</div>
 								<div class="leftInput">
-									<c:forEach var="i" begin="1" end="4">
+									<c:forEach var="i" begin="1" end="5">
 										<label><input name="lessons" type="checkbox" value="${i}"/>第${i}节</label>									
 									</c:forEach>
 									<br/><br/>
-									<c:forEach var="i" begin="5" end="8">
+									<c:forEach var="i" begin="6" end="11">
 										<label><input name="lessons" type="checkbox" value="${i}"/>第${i}节</label>									
 									</c:forEach>
 								</div>
