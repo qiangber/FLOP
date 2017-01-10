@@ -26,18 +26,13 @@ public class UserServiceImpl implements UserServiceInter {
 	
 	/**
 	 * @param username 用户名
-	 * @return true 该用户名不存在,false 该用户名已存在
+	 * @return null 该用户名不存在, other 该用户名已存在
 	 */
 	@Override
-	public boolean CheckUsername(String username) {
-		String hql="from User where username = ?";
-		String []parameters ={username};
-		List<User> list = HibernateUtils.executeQuery(hql, parameters);
-		if(list.size()==1){
-			return false;
-		}else{
-			return true;			
-		}
+	public Integer CheckUsername(String username) {
+		String hql = "select id from User where username = ?";
+		String[] parameters ={username};
+		return (Integer) HibernateUtils.uniqueQuery(hql, parameters);
 	}
 	
 	@Override
@@ -67,7 +62,7 @@ public class UserServiceImpl implements UserServiceInter {
 			hql.append(" and userInfo.name like '%").append(name).append("%'");					
 		}
 		if (num != null) {
-			hql.append(" and userInfo.username like '%").append(num).append("%'"); 
+			hql.append(" and userInfo.username = '").append(num).append("'"); 
 		}
 		hql.append(" order by id");
 		String[] params = {type};
@@ -77,7 +72,7 @@ public class UserServiceImpl implements UserServiceInter {
 
 	@Override
 	public User findById(String id) {
-		String hql="from User where id=?";
+		String hql = "from User where id = ?";
 		String [] parameters={id};
 		return (User)HibernateUtils.uniqueQuery(hql, parameters);		
 	}
@@ -122,5 +117,11 @@ public class UserServiceImpl implements UserServiceInter {
 		Object object = HibernateUtils.uniqueQuery(hql.toString(), params);
 		int rowCount = Integer.parseInt(object.toString());
 		return (rowCount-1)/pageSize+1  ;
+	}
+	
+	public boolean decreaseCredit(String userId) {
+		String hql = "update UserInfo set credit = credit - 1 where id = ?";
+		String[] parameters = {userId};
+		return HibernateUtils.executeUpdate(hql, parameters);
 	}
 }

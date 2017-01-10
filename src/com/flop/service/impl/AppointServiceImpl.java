@@ -15,6 +15,7 @@ import com.flop.model.Category;
 import com.flop.model.UserInfo;
 import com.flop.service.inter.AppointServiceInter;
 import com.flop.service.inter.CategoryServiceInter;
+import com.flop.service.inter.TypeServiceInter;
 import com.flop.service.inter.UserServiceInter;
 import com.flop.utils.HibernateUtils;
 
@@ -27,25 +28,25 @@ public class AppointServiceImpl implements AppointServiceInter {
 	@Autowired
 	private CategoryServiceInter categoryService;
 	
+	@Autowired
+	private TypeServiceInter typeService;
+	
 	@Override
 	public List<UserInfo> findTeacher(String type, String categoryId) {
 		Session session = null;
 		List<UserInfo> list = new ArrayList<UserInfo>();
 		try {
 			session = HibernateUtils.openSession();
-			String hql = "";
-			if (type.equals("writing")) {			
-				hql = "select distinct a.userInfo from WritingAppointment a";
-			} else if (type.equals("speaking")) {
-				hql = "select distinct a.userInfo from SpeakingAppointment a";
-			}
-			hql = hql.concat(" where a.date >= :start and a.date <= :end and a.status != 'close'");				
+			String hql = "select distinct a.userInfo from Appointment a where "
+					+ "a.date >= :start and a.date <= :end and a.type = :type "
+					+ "and a.status != 'close' and a.num > 0";
 			if (categoryId != null && !categoryId.equals("")) {
 				hql = hql.concat(" and a.categoryId = :categoryId");
 			}
 			DateTime today = new DateTime();
-			Query query = session.createQuery(hql);
-			query.setDate("start", today.plusDays(2).toDate()).setDate("end", today.plusDays(7).toDate());
+			Query query = session.createQuery(hql).setString("type", type)
+					.setDate("start", today.plusDays(2).toDate())
+					.setDate("end", today.plusDays(7).toDate());
 			if (categoryId != null && !categoryId.equals("")) {
 				query.setParameter("categoryId", categoryId);
 			}
@@ -65,24 +66,21 @@ public class AppointServiceImpl implements AppointServiceInter {
 		Session session = null;
 		List<Category> list = new ArrayList<Category>();
 		try {
-			String hql = "";
-			if (type.equals("writing")) {			
-				hql = "select distinct a.category from WritingAppointment a";
-			} else if (type.equals("speaking")) {
-				hql = "select distinct a.category from SpeakingAppointment a";
-			} else if (type.equals("lab")) {
-				hql = "select distinct a.category from LabAppointment a";
+			if (type.equals("lab")) {
 				teacherId = "1";
 			}
-			hql = hql.concat(" where a.date >= :start and a.date <= :end and a.status != 'close'");
+			String hql = "select distinct a.category from Appointment a where "
+					+ "a.date >= :start and a.date <= :end and a.type = :type "
+					+ "and a.status != 'close' and a.num > 0";
 			if (teacherId != null && !teacherId.equals("")) {
 				hql = hql.concat(" and a.userId = :teacherId");
 			}
 			session = HibernateUtils.openSession();
 			DateTime today = new DateTime();
 			int end = type.equals("lab") ? 30 : 7;
-			Query query = session.createQuery(hql);
-			query.setDate("start", today.plusDays(2).toDate()).setDate("end", today.plusDays(end).toDate());
+			Query query = session.createQuery(hql).setString("type", type)
+					.setDate("start", today.plusDays(2).toDate())
+					.setDate("end", today.plusDays(end).toDate());
 			if (teacherId != null && !teacherId.equals("")) {
 				query.setString("teacherId", teacherId);
 			}			
@@ -106,7 +104,7 @@ public class AppointServiceImpl implements AppointServiceInter {
 				teacherId = "1";
 			}
 			String hql = "from Appointment where type = :type and category.id = :categoryId and userInfo.id = :teacherId"
-					+ " and date >= :start and date <= :end and status != 'close' order by date, lesson";
+					+ " and date >= :start and date <= :end and status != 'close' and num > 0 order by date, lesson";
 			session = HibernateUtils.openSession();
 			DateTime today = new DateTime();
 			int end = type.equals("lab") ? 30 : 7;
@@ -211,12 +209,13 @@ public class AppointServiceImpl implements AppointServiceInter {
 	}
 
 	@Override
-	public String add(Appointment obj) {
-		String status = find(obj);
+	public String add(Appointment appoint) {
+		String status = find(appoint); //查重
 		if (status.equals("false")) {
-			obj.setUserInfo(userService.findById(obj.getUserId()).getUserInfo());
-			obj.setCategory(categoryService.findById(obj.getCategoryId()));
-			return HibernateUtils.save(obj) ? "success" : "error";			
+			appoint.setUserInfo(userService.findById(appoint.getUserId()).getUserInfo());
+			appoint.setCategory(categoryService.findById(appoint.getCategoryId()));
+			appoint.setNum(typeService.getLimit(appoint.getType()));
+			return HibernateUtils.save(appoint) ? "success" : "error";			
 		} else {
 			return status;
 		}
@@ -253,5 +252,28 @@ public class AppointServiceImpl implements AppointServiceInter {
 			}
 		}
 		return dateList;
+	}
+	
+	@Override
+	public List<Appointment> getAppointByDate(DateTime start, int plus, String type, String userId) {
+		Session session = null;
+		List<Appointment> list = new ArrayList<>();
+		try {
+			String hql = "from Appointment where date >= :start and date <= :end "
+					+ "and type = :type and userId = :userId";
+			session = HibernateUtils.openSession();
+			Query query = session.createQuery(hql).setString("type", type)
+					.setString("userId", userId)
+					.setDate("start", start.toDate())
+					.setDate("end", start.plusDays(plus).toDate());
+			list = query.list();			
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if (session != null && session.isOpen()) {
+				session.close();
+			}			
+		}
+		return list;
 	}
 }

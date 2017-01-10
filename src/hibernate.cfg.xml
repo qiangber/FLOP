@@ -39,7 +39,8 @@
   		<mapping resource="com/flop/model/Category.hbm.xml"/>
   		<mapping resource="com/flop/model/Order.hbm.xml"/>
   		<mapping resource="com/flop/model/Resource.hbm.xml"/>
-  		<mapping resource="com/flop/model/Notification.hbm.xml"/>       		
+  		<mapping resource="com/flop/model/Notification.hbm.xml"/>
+  		<mapping resource="com/flop/model/Type.hbm.xml"/>         		
 
     </session-factory>
 

@@ -1,5 +1,7 @@
 package com.flop.test;
 
+import java.util.List;
+
 import org.hibernate.Session;
 import org.joda.time.DateTime;
 import org.junit.After;
@@ -15,7 +17,6 @@ import com.flop.model.Appointment;
 import com.flop.model.News;
 import com.flop.model.Order;
 import com.flop.model.User;
-import com.flop.model.WritingAppointment;
 import com.flop.service.impl.AppointServiceImpl;
 import com.flop.service.impl.NewsServiceImpl;
 import com.flop.service.impl.OrderServiceImpl;
@@ -60,5 +61,12 @@ public class OrderTest {
 		order.setStatus("verify");
 		order.setAppointmentId("287");
 		orderService.add(order);
+	}
+	
+	@Test
+	public void test() {
+		session.createQuery("update Appointment set num = num - 1 where id = :id")
+			.setString("id", "301")
+			.executeUpdate();
 	}
 }

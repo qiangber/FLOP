@@ -4,15 +4,25 @@ import org.hibernate.Session;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.flop.model.About;
 import com.flop.model.News;
 import com.flop.model.User;
 import com.flop.model.UserInfo;
 import com.flop.service.impl.NewsServiceImpl;
+import com.flop.service.inter.UserServiceInter;
 import com.flop.utils.HibernateUtils;
 
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration({"classpath:spring-mvc.xml"})
 public class UserTest {
+	
+	@Autowired
+	UserServiceInter userService;
 	
 	private Session session;
 	
@@ -64,5 +74,10 @@ public class UserTest {
 		u.setUsername(ui.getUsername());
 		
 		session.merge(u);
+	}
+	
+	@Test
+	public void testCheckUsername() {
+		System.out.println(userService.CheckUsername("200"));
 	}
 }

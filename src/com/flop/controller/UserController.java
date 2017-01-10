@@ -22,6 +22,8 @@ import org.springframework.web.servlet.ModelAndView;
 import com.flop.model.Status;
 import com.flop.model.User;
 import com.flop.model.UserInfo;
+import com.flop.service.impl.AddUserByExcel;
+import com.flop.service.inter.ExcelHandler;
 import com.flop.service.inter.UserServiceInter;
 import com.flop.utils.TestExcel;
 
@@ -31,6 +33,9 @@ public class UserController {
 	
 	@Autowired
 	private UserServiceInter userService;
+	
+	@Autowired
+	private ExcelHandler addUserByExcel;
 
 	@RequestMapping(value="/json/login", method=RequestMethod.POST)
 	public @ResponseBody Object login(HttpServletRequest request, HttpServletResponse response) {
@@ -111,7 +116,7 @@ public class UserController {
 		return mav;
 	}
 	
-	@RequestMapping(value="/search", method=RequestMethod.POST)
+	@RequestMapping(value="/search", method=RequestMethod.GET)
 	public ModelAndView search(@RequestParam(value="type", required=true) String type,
 			@RequestParam(value="page", required=false, defaultValue="1") int page,
 			@RequestParam(value="searchName") String name,
@@ -169,7 +174,7 @@ public class UserController {
 			user.setPassword(password);
 			userService.update(user);
 		} else {
-			if (userService.CheckUsername(userInfo.getUsername())) {
+			if (userService.CheckUsername(userInfo.getUsername()) == null) {
 				User user = new User();
 				user.setUserInfo(userInfo);
 				user.setUsername(userInfo.getUsername());
@@ -254,7 +259,7 @@ public class UserController {
 				+ "excel" + File.separator + fileName;
 		try {
 			file.transferTo(new File(filePath));
-			Status status = TestExcel.getInstance().getInfoFromExcel(filePath);
+			Status status = addUserByExcel.getInfoFromExcel(filePath);
 			if (status.getStatus().equals("success")) {
 				request.setAttribute("result", status.getMsg());
 			} else {
@@ -281,11 +286,13 @@ public class UserController {
 	
 	@RequestMapping("/download")
 	public ResponseEntity<byte[]> download(HttpServletRequest request) throws IOException {
+		String fileName = "addUser.xlsx";
+		String fileType = "excel";
 		String filepath = request.getServletContext().getRealPath("resources") + File.separator
-				+ "excel" + File.separator + "addUser.xlsx";
+				+ fileType + File.separator + fileName;
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-        headers.setContentDispositionFormData("attachment", "addUser.xlsx");   
+        headers.setContentDispositionFormData("attachment", fileName);   
         return new ResponseEntity<byte[]>(FileUtils.readFileToByteArray(new File(filepath)), 
         		headers, HttpStatus.CREATED);
 	}

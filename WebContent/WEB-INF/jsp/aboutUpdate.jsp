@@ -99,17 +99,17 @@
 			</div>					
 		</div>
 	</div>
-	<div id="footer">Copyright &copy; 2016 电子科技大学外国语学院外语学习平台</div>
+	<div id="footer">Copyright &copy; 2017 电子科技大学外国语学院外语学习平台</div>
 </body>
 
 <script>
 //初始化UEditor
 var ue = UE.getEditor("newsContent", {toolbars: [[
 	'undo', 'redo', '|',
-	'bold', 'italic', 'underline', 'removeformat', 'formatmatch', 'autotypeset', 'blockquote', '|',
+	'simpleupload', 'justifyleft', 'justifycenter', 'justifyright', '|',
+	'bold', 'italic', 'underline', 'removeformat', 'blockquote', '|',
 	'forecolor', 'backcolor', 'insertorderedlist', 'insertunorderedlist', '|',
-	'fontfamily', 'fontsize', 'horizontal', 'spechars', '|',
-	'preview', 'searchreplace'
+	'fontfamily', 'fontsize', 'horizontal', 'spechars', 'preview', 'searchreplace'
 ]]});
 //用户注销函数
 function logOut() {

@@ -14,6 +14,7 @@ public class Appointment {
 	private UserInfo userInfo;
 	private String status = "open";
 	private String place;
+	private int num;
 	public int getId() {
 		return id;
 	}
@@ -79,5 +80,11 @@ public class Appointment {
 	}
 	public void setPlace(String place) {
 		this.place = place;
+	}
+	public int getNum() {
+		return num;
+	}
+	public void setNum(int num) {
+		this.num = num;
 	}
 }

@@ -12,6 +12,7 @@ public interface CategoryServiceInter {
 	public List<Category> findAll(int pageSize ,int pageNow);
 	public Category findById(String id);
 	public List<Category> findByType(String type);
+	public Integer findIdByName(String name, String type); 
 	public boolean update(Category obj);
 	public boolean delete(int id);
 	public boolean add(Object obj);

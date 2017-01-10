@@ -30,7 +30,7 @@
 			<div class="funcbox">
 				<ul>
 					<li><a href="${pageContext.request.contextPath}/news/list.do">公示公告</a></li>
-					<li><a href="${pageContext.request.contextPath}/appoint/list.do">实验室预约</a></li>
+					<li><a href="${pageContext.request.contextPath}/appoint/list.do">预约管理</a></li>
 					<li><a href="${pageContext.request.contextPath}/order/list.do">预约情况</a></li>
 					<li><a href="${pageContext.request.contextPath}/category/list.do">预约类型</a></li>
 					<li><a href="${pageContext.request.contextPath}/about/list.do">相关介绍</a></li>
@@ -83,10 +83,10 @@
 					            	</c:choose>
 					            	<c:choose>
 					            	<c:when test="${user.userInfo.lab == true}">
-					            	<label><input name="lab" type="checkbox" value="true" checked="checked" />实验室预约</label>					        
+					            	<label><input name="lab" type="checkbox" value="true" checked="checked" />预约管理</label>					        
 					            	</c:when>
 					            	<c:otherwise>
-					            	<label><input name="lab" type="checkbox" value="true"/>实验室预约</label>
+					            	<label><input name="lab" type="checkbox" value="true"/>预约管理</label>
 					            	</c:otherwise>
 					            	</c:choose>					            	
 					            </div>
@@ -102,7 +102,7 @@
 			</div>					
 		</div>
 	</div>
-	<div id="footer">Copyright &copy; 2016 电子科技大学外国语学院外语学习平台</div>
+	<div id="footer">Copyright &copy; 2017 电子科技大学外国语学院外语学习平台</div>
 </body>
 
 <script>

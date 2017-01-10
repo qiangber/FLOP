@@ -21,6 +21,7 @@
         <property name="speaking" type="boolean"></property>
         <property name="writing" type="boolean"></property>
         <property name="lab" type="boolean"></property>
+        <property name="credit" type="integer" not-null="true"></property>
 	</class>
 
 </hibernate-mapping>

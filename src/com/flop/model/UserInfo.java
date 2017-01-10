@@ -14,6 +14,7 @@ public class UserInfo {
 	private boolean speaking;
 	private boolean writing;
 	private boolean lab;
+	private int credit = 3;
 	public String getSex() {
 		return sex;
 	}
@@ -91,5 +92,11 @@ public class UserInfo {
 	}
 	public void setUsername(String username) {
 		this.username = username;
+	}
+	public int getCredit() {
+		return credit;
+	}
+	public void setCredit(int credit) {
+		this.credit = credit;
 	}
 }

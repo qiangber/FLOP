@@ -32,7 +32,7 @@
 			<div class="funcbox">
 				<ul>
 					<li><a href="${pageContext.request.contextPath}/news/list.do">公示公告</a></li>
-					<li><a href="${pageContext.request.contextPath}/appoint/list.do">实验室预约</a></li>
+					<li><a href="${pageContext.request.contextPath}/appoint/list.do">预约管理</a></li>
 					<li class="now"><a href="${pageContext.request.contextPath}/order/list.do">预约情况</a></li>
 					<li><a href="${pageContext.request.contextPath}/category/list.do">预约类型</a></li>
 					<li><a href="${pageContext.request.contextPath}/about/list.do">相关介绍</a></li>
@@ -59,7 +59,7 @@
 						<li id="li2" class="normal" onclick="window.location.href='/FLOP/order/list.do?type=speaking'">口语预约</li>
 						<li id="li2" class="normal" onclick="window.location.href='/FLOP/order/list.do?type=lab'">实验室预约</li>
 						<form action="downloadAll.do" enctype="multipart/form-data" method="post">
-							<input type="submit" value="导出所有作文" style="float:right;">
+							<input type="submit" value="导出所有作文" style="float:right;" />
 						</form>
 					</c:when>
 					<c:when test="${type == 'speaking'}">
@@ -75,6 +75,14 @@
 					</c:choose>
 					</ul>
 				</div>
+				<div class="search_news">
+					<form action="search.do" method="get">
+						<span id="titleSpan">学号：<input id="searchTitle" name="searchNum" type="text" style="width:150px;" value="${searchNum}"/></span>
+						<input type="hidden" name="type" value="${type}">
+						<span id="searchSpan"><input type="submit" value="搜索"/></span>		
+						<span id="allSearch" ><input type="button" value="全部用户" onclick="window.location.href='list.do?type=${type}'"/></span>							
+					</form>
+				</div>
 				<div class="statics">
 					<div class="phone_pic" id="newsList1">
 						<div id="newsList">
@@ -82,6 +90,8 @@
 								<tr>
 									<th>时间</th>
 									<th>预约人</th>
+									<th>电话</th>
+									<th>邮箱</th>
 									<th>类型</th>
 									<th>预约时间</th>
 									<th>预约对象</th>
@@ -94,8 +104,17 @@
 								<tr>
 									<td>${order.time}</td>
 									<td>${order.userInfo.name}(${order.userInfo.username})</td>
+									<td>${order.userInfo.phone}</td>
+									<td>${order.userInfo.email}</td>
 									<td>${order.appoint.category.name}</td>
+									<c:choose>
+									<c:when test="${type == 'lab'}">
 									<td>${order.appoint.date},第${order.appoint.lesson}节</td>
+									</c:when>
+									<c:otherwise>
+									<td>${order.appoint.date},第${order.appoint.lesson}节<br>地点:${order.appoint.place}</td>
+									</c:otherwise>
+									</c:choose>
 									<td>${order.appoint.userInfo.name}(${order.appoint.userInfo.username})</td>
 									<c:choose>
 										<c:when test="${order.status == 'accept'}">
@@ -107,8 +126,14 @@
 										<c:when test="${order.status == 'close'}">
 											<td>已关闭</td>
 										</c:when>
-										<c:when test="${order.status == 'open'}">
-											<td>预约中</td>
+										<c:when test="${order.status == 'verify'}">
+											<td>预约成功</td>
+										</c:when>
+										<c:when test="${order.status == 'absent'}">
+											<td>未到</td>
+										</c:when>
+										<c:when test="${order.status == 'arrived'}">
+											<td>已到</td>
 										</c:when>
 										<c:otherwise>
 											<td>失败</td>
@@ -125,13 +150,13 @@
 							<div class="pageCommon" style="cursor:hand">
 								<div class="scottPage">
 								    <c:if test="${currentPage != 1}">
-								    	<span style="cursor:pointer"><a href="list.do?page=${1}">首页 </a></span>
-						            	<a href="list.do?page=${currentPage-1}">上一页 </a>
+								    	<span style="cursor:pointer"><a href="list.do?page=${1}&type=${type}">首页 </a></span>
+						            	<a href="list.do?page=${currentPage-1}&type=${type}">上一页 </a>
 						            </c:if>
 								    <span class="currentPage" >${currentPage}/${pageCount}</span>
 						            <c:if test="${currentPage != pageCount}">
-						            	<a href="list.do?page=${currentPage+1}">下一页 </a>
-									    <span style="cursor:pointer"><a href="list.do?page=${pageCount}">尾页 </a></span>
+						            	<a href="list.do?page=${currentPage+1}&type=${type}">下一页 </a>
+									    <span style="cursor:pointer"><a href="list.do?page=${pageCount}&type=${type}">尾页 </a></span>
 						            </c:if>
 								</div>
 							</div>
@@ -141,7 +166,7 @@
 			</div>					
 		</div>
 	</div>
-	<div id="footer">Copyright &copy; 2016 电子科技大学外国语学院外语学习平台</div>
+	<div id="footer">Copyright &copy; 2017 电子科技大学外国语学院外语学习平台</div>
 </body>
 
 <script>

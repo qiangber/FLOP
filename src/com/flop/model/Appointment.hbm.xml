@@ -10,7 +10,7 @@
 			<generator class="native"></generator>
 		</id>
 		
-		<discriminator column="type" type="string"></discriminator>
+		<property name="type" type="string" length="20"></property>
 		<property name="date" type="date"></property>
 		<property name="lesson" length="20"></property>
 		<property name="userId" length="20"></property>
@@ -18,13 +18,11 @@
 		<property name="publishTime" length="20"></property>
 		<property name="status" type="string" length="20"></property>
 		<property name="place" type="string" length="40"></property>
+		<property name="num" type="integer" not-null="true"></property>
 		
 		<many-to-one name="userInfo" column="user" class="com.flop.model.UserInfo" lazy="false"></many-to-one>
 		<many-to-one name="category" column="category" class="com.flop.model.Category" lazy="false"></many-to-one>
 		
-		<subclass name="com.flop.model.LabAppointment" discriminator-value="lab"></subclass>
-		<subclass name="com.flop.model.WritingAppointment" discriminator-value="writing"></subclass>
-		<subclass name="com.flop.model.SpeakingAppointment" discriminator-value="speaking"></subclass>
 	</class>
 
 </hibernate-mapping>

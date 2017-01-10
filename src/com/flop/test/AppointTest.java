@@ -1,6 +1,5 @@
 package com.flop.test;
 
-import java.util.Date;
 import java.util.List;
 
 import org.hibernate.Session;
@@ -13,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.flop.model.SpeakingAppointment;
+import com.flop.model.Appointment;
 import com.flop.service.impl.AppointServiceImpl;
 import com.flop.service.inter.AppointServiceInter;
 import com.flop.utils.HibernateUtils;
@@ -40,23 +39,23 @@ public class AppointTest {
 	}
 	
 	@Test
-	public void testSave() {
-		SpeakingAppointment a = new SpeakingAppointment();
-		a.setDate(new Date());
-		a.setLesson(7);
-		a.setUserId("20");
-		a.setCategoryId("1");
-		a.setPublishTime(new DateTime().toString("YYYY-MM-dd HH:mm:ss"));
-		a.setPlace("kb212");
-		appointService.add(a);
-	}
-	
-	@Test
 	public void get() {
 		AppointServiceInter s = new AppointServiceImpl();
 		List<String> list = s.getDate();
 		for (String date : list) {
 			System.out.println(date);
+		}
+	}
+	
+	@Test
+	public void findCategory() {
+		System.out.println(appointService.findCategory("writing", ""));
+	}
+	
+	@Test
+	public void getAppointByDate() {
+		for (Appointment appoint : appointService.getAppointByDate(new DateTime(), 1, "writing", "20")) {
+			System.out.println(appoint.getDate() + " " + appoint.getLesson());
 		}
 	}
 }

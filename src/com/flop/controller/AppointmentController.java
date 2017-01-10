@@ -1,33 +1,38 @@
 package com.flop.controller;
 
+import java.io.File;
+import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.io.FileUtils;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.flop.model.Appointment;
 import com.flop.model.Category;
-import com.flop.model.LabAppointment;
-import com.flop.model.SpeakingAppointment;
 import com.flop.model.Status;
 import com.flop.model.UserInfo;
-import com.flop.model.WritingAppointment;
 import com.flop.service.inter.AppointServiceInter;
 import com.flop.service.inter.CategoryServiceInter;
+import com.flop.service.inter.ExcelHandler;
 import com.flop.service.inter.OrderServiceInter;
 import com.flop.utils.HibernateUtils;
 
@@ -44,6 +49,9 @@ public class AppointmentController {
 	@Autowired
 	private OrderServiceInter orderService;
 	
+	@Autowired
+	private ExcelHandler addAppointByExcel;
+	
 	@RequestMapping(value="/json/save", method=RequestMethod.POST)
 	public @ResponseBody Status add(HttpServletRequest request,
 			@RequestParam(value="lessons", required=true) String[] lessons,
@@ -53,12 +61,7 @@ public class AppointmentController {
 			return new Status("error", "请选择两天后的日期！");
 		}
 		String type = request.getParameter("type");
-		Appointment appoint;
-		if (type.equals("writing")) {
-			appoint = new WritingAppointment();
-		} else {
-			appoint = new SpeakingAppointment();
-		}
+		Appointment appoint = new Appointment();
 		appoint.setType(type);
 		appoint.setDate(date.toDate());
 		appoint.setCategoryId(categoryId);
@@ -101,13 +104,20 @@ public class AppointmentController {
 			}
 		}
 	}
-	
+
+//	22节课时间表	
+//	private static String[] timeList = {
+//			"8:30", "8:55", "9:20", "9:45", "10:20", "10:45", "11:10", "11:35",
+//			"14:30", "14:55", "15:20", "15:45", "16:20", "16:45", "17:10", "17:35",
+//			"19:30", "19:55", "20:20", "20:45", "21:10", "21:35"};
+
+//  11节课时间表
 	private static String[] timeList = {
-			"8:30", "8:55", "9:20", "9:45", "10:20", "10:45", "11:10", "11:35",
-			"14:30", "14:55", "15:20", "15:45", "16:20", "16:45", "17:10", "17:35",
-			"19:30", "19:55", "20:20", "20:45", "21:10", "21:35"};
+			"8:30", "9:20", "10:20", "11:10",
+			"14:30", "15:20", "16:20", "17:10",
+			"19:30", "20:20", "21:10"};
 	
-	private static Map<String, String> map = new HashMap<String, String>();
+	public static Map<String, String> map = new HashMap<String, String>();
 	
 	static {
 		for (int i = 0; i < timeList.length; i++) {
@@ -133,7 +143,7 @@ public class AppointmentController {
     }
 	
 	@RequestMapping(value="/save", method=RequestMethod.POST)
-	public ModelAndView add(LabAppointment appoint,
+	public ModelAndView add(Appointment appoint,
 			@RequestParam(value="lessons") String[] lessons) throws ParseException {
 		DateTime date = new DateTime(appoint.getDate());
 		if (date.plusDays(-1).isBeforeNow()) {
@@ -235,5 +245,61 @@ public class AppointmentController {
 		HibernateUtils.merge(appoint);
 		orderService.close(appointId);
 		return "redirect:list.do";
+	}
+	
+	@RequestMapping(value="/batchAdd")
+	public String batchAdd() {
+		return "appointBatchAdd";
+	}
+	
+	@RequestMapping("/download")
+	public ResponseEntity<byte[]> download(HttpServletRequest request) throws IOException {
+		String fileName = "addAppoint.xlsx";
+		String fileType = "excel";
+		String filepath = request.getServletContext().getRealPath("resources") + File.separator
+				+ fileType + File.separator + fileName;
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+        headers.setContentDispositionFormData("attachment", fileName);   
+        return new ResponseEntity<byte[]>(FileUtils.readFileToByteArray(new File(filepath)), 
+        		headers, HttpStatus.CREATED);
+	}
+	
+	@RequestMapping("/add")
+	public ModelAndView uploadFile(@RequestParam("excel") MultipartFile file, HttpServletRequest request) {
+		String fileName = file.getOriginalFilename().equals("addAppoint.xlsx")
+				?"addUserTemp":file.getOriginalFilename();
+		String filePath = request.getServletContext().getRealPath("resources") + File.separator
+				+ "excel" + File.separator + fileName;
+		try {
+			file.transferTo(new File(filePath));
+			Status status = addAppointByExcel.getInfoFromExcel(filePath);
+			if (status.getStatus().equals("success")) {
+				request.setAttribute("result", status.getMsg());
+			} else {
+				request.setAttribute("result", status.getMsg());
+			}
+		} catch (IllegalStateException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		ModelAndView mav = new ModelAndView();
+		mav.setViewName("appointBatchAdd");
+		return mav;
+	}
+	
+	@RequestMapping(value="/getAppointDate", method=RequestMethod.GET)
+	public @ResponseBody List<Map<String, String>> getAppointDate(@RequestParam(value="type", required=true) String type,
+			@RequestParam(value="userId", required=true) String userId) {
+		List<Map<String, String>> list = new ArrayList<>();
+		List<Appointment> appoints = appointService.getAppointByDate(DateTime.now(), 1, type, userId);
+		for (Appointment appointment : appoints) {
+			Map<String, String> dateMap = new HashMap<>();
+			dateMap.put("date", new DateTime(appointment.getDate()).toString("YYYY-MM-dd") + " " + map.get(appointment.getLesson() + ""));
+			dateMap.put("appointId", appointment.getId() + "");
+			list.add(dateMap);
+		}
+		return list;
 	}
 }

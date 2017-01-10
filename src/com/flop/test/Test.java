@@ -1,8 +1,9 @@
 package com.flop.test;
 
+import java.util.LinkedList;
+
 public class Test {
 	public static void main(String[] args) {
-		long i = 9;
-		System.out.println(i/10);
+		System.out.println("lab".matches("writing|speaking|lab"));
 	}
 }

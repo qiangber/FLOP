@@ -43,8 +43,8 @@ public class CategoryServiceImpl implements CategoryServiceInter {
 
 	@Override
 	public boolean update(Category category) {
-		String hql="update Category set name=?,type=? where id=?";
-		String [] parameters={category.getName(),category.getType(),category.getId()+""};
+		String hql = "update Category set name=?,type=? where id=?";
+		String [] parameters = {category.getName(),category.getType(),category.getId()+""};
 		return HibernateUtils.executeUpdate(hql, parameters);
 	}
 	
@@ -55,9 +55,16 @@ public class CategoryServiceImpl implements CategoryServiceInter {
 
 	@Override
 	public int getPageCount(int pageSize) {
-		String hql="select count(*) from Category";
-		Object object=HibernateUtils.uniqueQuery(hql, null);
-		int rowCount =Integer.parseInt(object.toString());
+		String hql = "select count(*) from Category";
+		Object object = HibernateUtils.uniqueQuery(hql, null);
+		int rowCount = Integer.parseInt(object.toString());
 		return (rowCount-1)/pageSize+1  ;
+	}
+	
+	@Override
+	public Integer findIdByName(String name, String type) {
+		String hql = "select id from Category where name = ? and type = ?";
+		String [] parameters = {name, type};
+		return (Integer) HibernateUtils.uniqueQuery(hql, parameters);
 	}
 }

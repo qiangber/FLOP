@@ -45,7 +45,7 @@ public class WordGenerator {
         //设置编码
         configuration.setDefaultEncoding("utf-8");        
         //获取ftl模板路径
-        configuration.setClassForTemplateLoading(WordGenerator.class,"/com/flop/utils/");        
+        configuration.setClassForTemplateLoading(WordGenerator.class, "/com/flop/utils/");        
         try {
         	//获取模板
 			Template template = configuration.getTemplate("model.ftl");

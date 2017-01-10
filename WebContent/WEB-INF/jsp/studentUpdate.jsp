@@ -30,7 +30,7 @@
 			<div class="funcbox">
 				<ul>
 					<li><a href="${pageContext.request.contextPath}/news/list.do">公示公告</a></li>
-					<li><a href="${pageContext.request.contextPath}/appoint/list.do">实验室预约</a></li>
+					<li><a href="${pageContext.request.contextPath}/appoint/list.do">预约管理</a></li>
 					<li><a href="${pageContext.request.contextPath}/order/list.do">预约情况</a></li>
 					<li><a href="${pageContext.request.contextPath}/category/list.do">预约类型</a></li>
 					<li><a href="${pageContext.request.contextPath}/about/list.do">相关介绍</a></li>
@@ -85,7 +85,7 @@
 					            	</c:otherwise>
 					            	</c:choose>
 								</div>
-					            
+					            <div class="item"><div class="title">信用度：</div><input name="credit" id="credit" type="text" value="${user.userInfo.credit}" /></div>
 					            <div class="btncontain">
 					            	<input class="adduserbtn" type="submit" value="确认添加"/>
 					            </div>
@@ -98,7 +98,7 @@
 			</div>					
 		</div>
 	</div>
-	<div id="footer">Copyright &copy; 2016 电子科技大学外国语学院外语学习平台</div>
+	<div id="footer">Copyright &copy; 2017 电子科技大学外国语学院外语学习平台</div>
 </body>
 
 <script>

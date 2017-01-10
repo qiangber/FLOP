@@ -12,7 +12,7 @@ public interface UserServiceInter {
 	
 	public UserInfo CheckUser(User user);
 	public UserInfo CheckAdminUser(User user);
-	public boolean CheckUsername(String username);
+	public Integer CheckUsername(String username);
 	public List<User> findAll(int pageSize ,int pageNow, String type);
 	public List<User> findAll(int pageSize ,int pageNow, String type, String name, String num);
 	public User findById(String id);
@@ -21,4 +21,5 @@ public interface UserServiceInter {
 	public void add(Object obj);
 	public int getPageCount(int pageSize, String type);
 	public int getPageCount(int pageSize, String type, String name, String num);
+	public boolean decreaseCredit(String userId);
 }

@@ -32,7 +32,7 @@
 			<div class="funcbox">
 				<ul>
 					<li><a href="${pageContext.request.contextPath}/news/list.do">公示公告</a></li>
-					<li class="now"><a href="${pageContext.request.contextPath}/appoint/list.do">实验室预约</a></li>
+					<li class="now"><a href="${pageContext.request.contextPath}/appoint/list.do">预约管理</a></li>
 					<li><a href="${pageContext.request.contextPath}/order/list.do">预约情况</a></li>
 					<li><a href="${pageContext.request.contextPath}/category/list.do">预约类型</a></li>
 					<li><a href="${pageContext.request.contextPath}/about/list.do">相关介绍</a></li>
@@ -49,13 +49,14 @@
 			</div>
 		</div>
 		<div id="right">
-			<h4>实验室预约</h4>
+			<h4>预约管理</h4>
 			<div class="nTab">
 				<div class="TabTitle">
 					<ul id="myTab1">
 						<li id="li1" class="normal" onclick="window.location.href='/FLOP/appoint/list.do'">已有预约</li>
 						<li id="li2" class="active" onclick="window.location.href='/FLOP/appoint/preSave.do'">可预约添加</li>
 						<li id="li2" class="normal" onclick="window.location.href='/FLOP/order/listToDeal.do'">预约处理</li>
+						<input type="button" value="批量添加" style="float:right;" onclick="window.location.href='/FLOP/appoint/batchAdd.do'" />
 					</ul>
 				</div>
 				<div class="statics">
@@ -109,7 +110,7 @@
 			</div>					
 		</div>
 	</div>
-	<div id="footer">Copyright &copy; 2016 电子科技大学外国语学院外语学习平台</div>
+	<div id="footer">Copyright &copy; 2017 电子科技大学外国语学院外语学习平台</div>
 </body>
 
 <script>
@@ -145,7 +146,6 @@ $("#datepicker").jeDate({
 function logOut() {
 	var isLogOut = confirm("您要注销登录吗？");
 	if (isLogOut == true) {
-		outFrm.MSG_HEADER.value = "c2s_UserLogOut";
 		document.outFrm.submit();
 	}
 }

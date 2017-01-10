@@ -1,7 +1,11 @@
 package com.flop.controller;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -9,9 +13,22 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -29,10 +46,12 @@ import com.flop.model.Notification;
 import com.flop.model.Order;
 import com.flop.model.Status;
 import com.flop.service.impl.AppointServiceImpl;
+import com.flop.service.impl.ExportOrderByExcel;
 import com.flop.service.impl.OrderServiceImpl;
 import com.flop.service.inter.AppointServiceInter;
 import com.flop.service.inter.NotificationServiceInter;
 import com.flop.service.inter.OrderServiceInter;
+import com.flop.service.inter.UserServiceInter;
 import com.flop.utils.WordGenerator;
 
 @Controller
@@ -43,7 +62,16 @@ public class OrderController {
 	private OrderServiceInter orderService;
 	
 	@Autowired
+	private AppointServiceInter appointService;
+	
+	@Autowired
 	private NotificationServiceInter notificationService;
+	
+	@Autowired
+	private UserServiceInter userService;
+	
+	@Autowired
+	private ExportOrderByExcel exportOrderByExcel;
 	
 	@RequestMapping(value="/json/deal", method=RequestMethod.POST)
 	public @ResponseBody Status deal(
@@ -105,11 +133,11 @@ public class OrderController {
 		order.setTitle(title);
 		order.setContent(content);
 		order.setTime(new DateTime().toString("YYYY-MM-dd HH:mm:ss"));
-		order.setStatus("verify");
 		boolean flag = true;
 		List<String> slist = new ArrayList<String>();
 		List<String> elist = new ArrayList<String>();
 		List<String> rlist = new ArrayList<String>();
+		List<String> emptyList = new ArrayList<String>();
 		for (String appointId : appointIds) {
 			order.setAppointmentId(appointId);
 			Status status = orderService.add(order);
@@ -121,6 +149,9 @@ public class OrderController {
 			} else if (status.getStatus().equals("exist")) {
 				rlist.add(appointId);
 				flag = false;
+			} else if (status.getStatus().equals("empty")) {
+				emptyList.add(appointId);
+				flag = false;
 			}
 		}
 		if (flag) {
@@ -131,15 +162,17 @@ public class OrderController {
 					order.getAppoint().getUserInfo().getId() + "",
 					order));
 			notificationService.notifyUser(order.getAppoint().getUserInfo().getId() + "");
-			return new Status("success", "预约成功，请等待回复！");
+			return new Status("success", "预约成功！");
 		} else {
 			if (slist.size() > 0) {
-				return new Status("success", listToString(slist) + "预约成功，请等待回复！"
+				return new Status("success", listToString(slist) + "预约成功！"
 						+ (elist.size() > 0 ? listToString(elist) + "预约失败！" : "")
-						+ (rlist.size() > 0 ? listToString(rlist) + "已预约过该时段！" : ""));		
+						+ (rlist.size() > 0 ? listToString(rlist) + "已预约过该时段！" : "")
+						+ (emptyList.size() > 0 ? listToString(emptyList) + "该时段预约人数已满！" : ""));		
 			} else {
 				return new Status("error", (elist.size() > 0 ? listToString(elist) + "预约失败！" : "")
-						+ (rlist.size() > 0 ? listToString(rlist) + "已预约过该时段！" : ""));
+						+ (rlist.size() > 0 ? listToString(rlist) + "已预约过该时段！" : "")
+						+ (emptyList.size() > 0 ? listToString(emptyList) + "该时段预约人数已满！" : ""));
 			}
 		} 
 	}
@@ -158,8 +191,9 @@ public class OrderController {
             }else {
                 flag = true;
             }
-            result.append(appoint.getDate() + " " + appoint.getLesson() + "节");
+            result.append(appoint.getDate() + " " + AppointmentController.map.get(appoint.getLesson() + ""));
         }
+        result.append(" ");
         return result.toString();
     }
 	
@@ -237,5 +271,39 @@ public class OrderController {
         headers.setContentDispositionFormData("attachment", "composition.zip");   
         return new ResponseEntity<byte[]>(FileUtils.readFileToByteArray(new File(filepath)), 
         		headers, HttpStatus.CREATED);
+	}
+	
+	@RequestMapping(value="/search", method=RequestMethod.GET)
+	public ModelAndView search(@RequestParam(value="type", required=true) String type,
+			@RequestParam(value="page", required=false, defaultValue="1") int page,
+			@RequestParam(value="searchNum") String num) {
+		ModelAndView mav = new ModelAndView();
+		mav.addObject("orderList", orderService.findAll(15, page, type, num));
+		mav.addObject("currentPage", page);
+		mav.addObject("pageCount", orderService.getPageCountByNum(15, type, num));
+		mav.addObject("searchNum", num);
+		mav.addObject("type", type);
+		mav.setViewName("orderSearchList");
+		return mav;
+	}
+	
+	@RequestMapping(value="/export", method=RequestMethod.GET)
+	public ResponseEntity<byte[]> export(HttpServletRequest request,
+			@RequestParam(value="appointId", required=true) String appointId) throws IOException {
+		List<Order> orders = orderService.findByAppointId(appointId);
+		Appointment appoint = appointService.findById(appointId);
+		String fileName = appoint.getUserInfo().getName()
+				.concat("_").concat(new DateTime(appoint.getDate()).toString("YYYY-MM-dd"))
+				.concat("_").concat(AppointmentController.map.get(appoint.getLesson() + "").replace(":", "-"))
+				.concat("_").concat(appoint.getPlace());
+		Workbook workbook = exportOrderByExcel.createExcel(fileName, orders);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+		headers.setContentDispositionFormData("attachment", new String(fileName.getBytes(), "ISO-8859-1").concat(".xlsx"));
+		workbook.write(out);
+		out.flush();
+		out.close();
+        return new ResponseEntity<byte[]>(out.toByteArray(), headers, HttpStatus.CREATED);
 	}
 }

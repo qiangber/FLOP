@@ -114,9 +114,9 @@ public class VerifyCodeAction extends HttpServlet {
         int red = 0, green = 0, blue = 0;  
         for (int i = 0; i < codeCount; i++) {      
             String strRand = String.valueOf(codeSequence[random.nextInt(codeSequence.length)]);     
-            red = random.nextInt(255);   
-            green = random.nextInt(255);   
-            blue = random.nextInt(255);      
+            red = random.nextInt(150);   
+            green = random.nextInt(150);   
+            blue = random.nextInt(150);      
             gd.setColor(new Color(red, green, blue));   
             gd.drawString(strRand, i * xx, codeY);     
             randomCode.append(strRand);   

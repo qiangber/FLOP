@@ -10,8 +10,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.flop.model.Category;
+import com.flop.model.Type;
 import com.flop.service.impl.CategoryServiceImpl;
 import com.flop.service.inter.CategoryServiceInter;
+import com.flop.service.inter.TypeServiceInter;
 
 @Controller
 @RequestMapping("/category")
@@ -19,6 +21,9 @@ public class CategoryController {
 	
 	@Autowired
 	private CategoryServiceInter categoryService;
+	
+	@Autowired
+	private TypeServiceInter typeService;
 	
 	@RequestMapping(value="/json/list")
 	public @ResponseBody List<Category> listJson(
@@ -80,5 +85,24 @@ public class CategoryController {
 			categoryService.delete(Integer.parseInt(id));
 		}
 		return "redirect:list.do";
+	}
+	
+	@RequestMapping("/limit")
+	public String limit() {
+		return "typeUpdate"; 
+	}
+	
+	@RequestMapping("/updateLimit")
+	public ModelAndView update(Type type) {
+		ModelAndView mav = new ModelAndView("typeUpdate");
+		if (typeService.update(type)) {
+			mav.addObject("result", "修改成功!");
+		}
+		return mav;
+	}
+	
+	@RequestMapping("/findLimit")
+	public @ResponseBody int findLimit(@RequestParam(value="name", required=true) String name) {
+		return typeService.getLimit(name);
 	}
 }

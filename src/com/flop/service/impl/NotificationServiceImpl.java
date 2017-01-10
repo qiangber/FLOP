@@ -31,10 +31,24 @@ public class NotificationServiceImpl implements NotificationServiceInter {
 			StringBuilder msg = new StringBuilder();
 			if (notification.getType().equals(Notification.ORDER_CLIENT)) {
 				msg.append(notification.getOrder().getAppoint().getUserInfo().getName());
-				if (notification.getOrder().getStatus().equals("close")) {
+				switch (notification.getOrder().getStatus()) {
+				case "close":
 					msg.append("关闭了");
-				} else {
-					msg.append(notification.getOrder().getStatus().equals("accept") ? "接受了你的" : "拒绝了你的");					
+					break;
+				case "accept":
+					msg.append("接受了你的");
+					break;
+				case "reject":
+					msg.append("拒绝了你的");
+					break;
+				case "absent":
+					msg.append("考勤-未到");
+					break;
+				case "arrived":
+					msg.append("考勤-已到");
+					break;
+				default:
+					break;
 				}
 			} else {
 				msg.append(notification.getOrder().getUserInfo().getName());
