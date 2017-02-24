@@ -3,10 +3,7 @@ package com.flop.service.impl;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.List;
-
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.DateUtil;
@@ -14,21 +11,16 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.apache.tomcat.util.buf.StringCache;
-import org.hibernate.Session;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.flop.model.Appointment;
 import com.flop.model.Status;
-import com.flop.model.User;
-import com.flop.model.UserInfo;
 import com.flop.service.inter.AppointServiceInter;
 import com.flop.service.inter.CategoryServiceInter;
 import com.flop.service.inter.ExcelHandler;
 import com.flop.service.inter.UserServiceInter;
-import com.flop.utils.HibernateUtils;
 
 @Service("addAppointByExcel")
 public class AddAppointByExcel extends ExcelHandler {

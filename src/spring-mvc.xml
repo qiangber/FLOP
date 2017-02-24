@@ -61,7 +61,7 @@
 	    <property name="maxUploadSize" value="10000000"/>
 	</bean>
 		
-	<!-- <mvc:interceptors>  
+	<mvc:interceptors>  
         <mvc:interceptor>  
             <mvc:mapping path="/*/*.do" />  
             <mvc:mapping path="/*/*.jsp" />  
@@ -69,5 +69,5 @@
             <mvc:exclude-mapping path="/*/json/*.do"/>
             <bean class="com.flop.service.impl.AdminLoginInterceptor" />  
         </mvc:interceptor>        
-    </mvc:interceptors> -->
+    </mvc:interceptors>
 </beans>

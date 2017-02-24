@@ -169,7 +169,7 @@ public class OrderServiceImpl implements OrderServiceInter {
 
 	@Override
 	public boolean find(Order order) {
-		String hql = "from Order where userInfo.id = ? and appoint.id = ?";
+		String hql = "from Order where userInfo.id = ? and appoint.id = ? and status != 'cancle' and status != 'reject'";
 		String[] parameters = {order.getUserId(), order.getAppointmentId()};
 		return HibernateUtils.uniqueQuery(hql, parameters) == null;
 	}
