@@ -22,4 +22,6 @@ public interface UserServiceInter {
 	public int getPageCount(int pageSize, String type);
 	public int getPageCount(int pageSize, String type, String name, String num);
 	public boolean decreaseCredit(String userId);
+	public boolean setChance(int chance);
+	public boolean setChance();
 }

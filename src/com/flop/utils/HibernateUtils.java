@@ -25,7 +25,7 @@ public class HibernateUtils {
 		sessionFactory = configuration.buildSessionFactory(serviceRegistry);
 	}
 
-	// 获取全新的全新的session
+	// 获取全新的session
 	public static Session openSession() {
 		return sessionFactory.openSession();
 	}
@@ -41,6 +41,14 @@ public class HibernateUtils {
 			threadLocal.set(session);
 		}
 		return session;
+	}
+	
+	public static void closeSession() {
+		Session session = threadLocal.get();
+		if (session != null && session.isOpen()) {
+			session.close();
+		}
+		threadLocal.set(null);
 	}
 
 	public static List executeQuery(String hql, String[] parameters) {

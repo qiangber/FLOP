@@ -13,6 +13,7 @@ import javax.websocket.Session;
 import org.springframework.stereotype.Service;
 
 import com.flop.channel.NotificationChannel;
+import com.flop.controller.AppointmentController;
 import com.flop.model.Notification;
 import com.flop.service.inter.NotificationServiceInter;
 import com.flop.utils.HibernateUtils;
@@ -51,7 +52,7 @@ public class NotificationServiceImpl implements NotificationServiceInter {
 					break;
 				}
 			} else {
-				msg.append(notification.getOrder().getUserInfo().getName());
+				msg.append(String.format("%s(%s)", notification.getOrder().getUserInfo().getName(), notification.getOrder().getUserInfo().getUsername()));
 				msg.append(notification.getOrder().getStatus().equals("cancel") ? "取消了你的" : "向你发起了");
 			}
 			String orderType = notification.getOrder().getAppoint().getCategory().getType();
@@ -65,8 +66,8 @@ public class NotificationServiceImpl implements NotificationServiceInter {
 			msg.append(notification.getOrder().getAppoint().getCategory().getName()).append(" ");
 			SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 			SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy/MM/dd");
-			msg.append(sdf2.format(notification.getOrder().getAppoint().getDate())).append(" 第");
-			msg.append(Integer.toString(notification.getOrder().getAppoint().getLesson())).append("节）");
+			msg.append(sdf2.format(notification.getOrder().getAppoint().getDate())).append("  ");
+			msg.append(AppointmentController.map.get(notification.getOrder().getAppoint().getLesson() + "")).append("）");
 			map.put("msg", msg.toString());
 			map.put("date", sdf1.format(notification.getDate()));
 			list.add(map);

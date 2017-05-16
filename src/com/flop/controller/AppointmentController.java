@@ -113,8 +113,8 @@ public class AppointmentController {
 
 //  11节课时间表
 	private static String[] timeList = {
-			"8:30", "9:20", "10:20", "11:10",
-			"14:30", "15:20", "16:20", "17:10",
+			"8:30", "9:20", "10:20", "11:10", "12:40", "13:30",
+			"14:30", "15:20", "16:20", "17:10", "18:40",
 			"19:30", "20:20", "21:10"};
 	
 	public static Map<String, String> map = new HashMap<String, String>();
@@ -289,11 +289,11 @@ public class AppointmentController {
 		return mav;
 	}
 	
-	@RequestMapping(value="/getAppointDate", method=RequestMethod.GET)
+	@RequestMapping(value="/json/getAppointDate", method=RequestMethod.GET)
 	public @ResponseBody List<Map<String, String>> getAppointDate(@RequestParam(value="type", required=true) String type,
 			@RequestParam(value="userId", required=true) String userId) {
 		List<Map<String, String>> list = new ArrayList<>();
-		List<Appointment> appoints = appointService.getAppointByDate(DateTime.now(), 1, type, userId);
+		List<Appointment> appoints = appointService.getAppointByDate(DateTime.now().minusDays(3), 7, type, userId);
 		for (Appointment appointment : appoints) {
 			Map<String, String> dateMap = new HashMap<>();
 			dateMap.put("date", new DateTime(appointment.getDate()).toString("YYYY-MM-dd") + " " + map.get(appointment.getLesson() + ""));

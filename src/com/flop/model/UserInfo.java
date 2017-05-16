@@ -15,6 +15,7 @@ public class UserInfo {
 	private boolean writing;
 	private boolean lab;
 	private int credit = 3;
+	private int chance;
 	public String getSex() {
 		return sex;
 	}
@@ -98,5 +99,11 @@ public class UserInfo {
 	}
 	public void setCredit(int credit) {
 		this.credit = credit;
+	}
+	public int getChance() {
+		return chance;
+	}
+	public void setChance(int chance) {
+		this.chance = chance;
 	}
 }

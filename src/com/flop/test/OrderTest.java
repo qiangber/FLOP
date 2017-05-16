@@ -1,5 +1,6 @@
 package com.flop.test;
 
+import java.util.Date;
 import java.util.List;
 
 import org.hibernate.Session;
@@ -68,5 +69,10 @@ public class OrderTest {
 		session.createQuery("update Appointment set num = num - 1 where id = :id")
 			.setString("id", "301")
 			.executeUpdate();
+	}
+	
+	@Test
+	public void findall() {
+		System.out.println(orderService.findAll(10, 0, "writing", new DateTime(2017, 1, 12, 0, 0).toDate(), "kb233", 3, "2005", "2015"));
 	}
 }

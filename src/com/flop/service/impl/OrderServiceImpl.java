@@ -6,10 +6,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.xmlbeans.impl.xb.xsdschema.RestrictionDocument.Restriction;
+import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.hibernate.criterion.MatchMode;
+import org.hibernate.criterion.Restrictions;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -79,6 +84,36 @@ public class OrderServiceImpl implements OrderServiceInter {
 	}
 	
 	@Override
+	public List<Order> findAll(int pageSize ,int pageNow, String type,
+			Date date, String place, int lesson, String obj, String number) {
+		Criteria c = HibernateUtils.openSession().createCriteria(Order.class)
+				.setFirstResult((pageNow - 1) * pageSize)
+				.setMaxResults(pageSize);
+		c.createAlias("appoint", "a");
+		c.createAlias("userInfo", "u");
+		c.createAlias("a.userInfo", "au");
+		c.add(Restrictions.eq("a.type", type));
+		if (date != null) {
+			c.add(Restrictions.eq("a.date", date));
+		}
+		if (place != null && !place.equals("")) {
+			c.add(Restrictions.ilike("a.place", place, MatchMode.ANYWHERE));
+		}
+		if (lesson >= 1 && lesson <= 11) {
+			c.add(Restrictions.eq("a.lesson", lesson));
+		}		
+		if (obj != null && !obj.equals("")) {
+			c.add(Restrictions.ilike("au.username", obj, MatchMode.ANYWHERE));
+		}
+		if (number != null && !number.equals("")) {
+			c.add(Restrictions.eq("u.username", number));
+		}
+		c.addOrder(org.hibernate.criterion.Order.desc("time"));
+		c.addOrder(org.hibernate.criterion.Order.asc("a.lesson"));
+		return c.list();
+	}
+	
+	@Override
 	public List<Order> findAllWriting() {
 		String hql = "select distinct o from Order o where o.appoint.type = 'writing' "
 				+ "order by o.time desc";
@@ -100,7 +135,7 @@ public class OrderServiceImpl implements OrderServiceInter {
 		Map<String, Object> map = new HashMap<String, Object>();
 		try {			
 			session = HibernateUtils.openSession();
-			String hql = "from Order where appoint.userInfo.id = ? and "
+			String hql = "from Order where status != 'cancel' and appoint.userInfo.id = ? and "
 					+ "appoint.type = ? and "
 					+ "appoint.status != 'close' and appoint.date >= ? order by appoint.date, appoint.lesson";
 			List<Order> orders = session.createQuery(hql).setString(0, userId).setString(1, type).setDate(2, new Date())
@@ -166,22 +201,27 @@ public class OrderServiceImpl implements OrderServiceInter {
 		String [] parameters = {id};
 		return HibernateUtils.executeUpdate(hql, parameters);		
 	}
-
+	
+	/**
+	 * @param order所要查询的预约请求
+	 * @return 该请求是否已被创建且状态不为cancel则返回true，否则返回false
+	 */
 	@Override
 	public boolean find(Order order) {
-		String hql = "from Order where userInfo.id = ? and appoint.id = ? and status != 'cancle' and status != 'reject'";
+		String hql = "from Order where userInfo.id = ? and appoint.id = ? and status != 'cancel' and status != 'reject'";
 		String[] parameters = {order.getUserId(), order.getAppointmentId()};
 		return HibernateUtils.uniqueQuery(hql, parameters) == null;
 	}
 	
 	@Override
 	public Status add(Order order) {
+		if (userService.findById(order.getUserId()).getUserInfo().getChance() < 1) {
+			return new Status("out", "本周预约次数已满！");
+		}
 		if (find(order)) {
-			Session session = null;
-			Transaction tx = null;
+			Session session = HibernateUtils.openSession();
+			Transaction tx = session.beginTransaction();
 			try {
-				session = HibernateUtils.getCurrentSession();
-				tx = session.beginTransaction();
 				int num = (Integer) session.createQuery("select num from Appointment where id = :id")
 						.setString("id", order.getAppointmentId())
 						.uniqueResult();
@@ -196,6 +236,9 @@ public class OrderServiceImpl implements OrderServiceInter {
 					session.save(order);
 					session.createQuery("update Appointment set num = num - 1 where id = :id")
 						.setString("id", order.getAppointmentId())
+						.executeUpdate();
+					session.createQuery("update UserInfo set chance = chance - 1 where id = :id")
+						.setString("id", order.getUserId())
 						.executeUpdate();
 					tx.commit();
 					return new Status("success", "预约成功!");
@@ -242,7 +285,7 @@ public class OrderServiceImpl implements OrderServiceInter {
 	 * 根据预约人的学号搜索相关预约
 	 */
 	@Override
-	public int getPageCountByNum(int pageSize, String type, String number) {
+	public int getPageCountByNum(int pageSize, String type, String num) {
 		Session session = null;
 		int rowCount = 0;
 		try {
@@ -250,7 +293,7 @@ public class OrderServiceImpl implements OrderServiceInter {
 			String hql = "select count(*) from Order where appoint.category.type = ?"
 					+ " and userInfo.username = ?";
 			Object object= session.createQuery(hql).setString(0, type)
-					.setString(1, number).uniqueResult();
+					.setString(1, num).uniqueResult();
 			rowCount = Integer.parseInt(object.toString());
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -260,6 +303,34 @@ public class OrderServiceImpl implements OrderServiceInter {
 			}
 		}
 		return (rowCount-1)/pageSize + 1;
+	}
+	
+	@Override
+	public int getSearchPageCount(int pageSize, String type, 
+			Date date, String place, int lesson, String obj, String num) {
+		Criteria c = HibernateUtils.openSession().createCriteria(Order.class);
+		c.createAlias("appoint", "a");
+		c.createAlias("userInfo", "u");
+		c.createAlias("a.userInfo", "au");
+		c.add(Restrictions.eq("a.type", type));
+		if (date != null) {
+			c.add(Restrictions.eq("a.date", date));
+		}
+		if (place != null && !place.equals("")) {
+			c.add(Restrictions.eq("a.place", place));
+		}
+		if (lesson >= 1 && lesson <= 11) {
+			c.add(Restrictions.eq("a.lesson", lesson));
+		}		
+		if (obj != null && !obj.equals("")) {
+			c.add(Restrictions.eq("au.username", obj));
+		}
+		if (num != null && !num.equals("")) {
+			c.add(Restrictions.eq("u.username", num));
+		}
+		c.addOrder(org.hibernate.criterion.Order.desc("time"));
+		c.addOrder(org.hibernate.criterion.Order.asc("a.lesson"));
+		return (c.list().size()-1)/pageSize + 1;
 	}
 	
 	@Override
@@ -287,21 +358,37 @@ public class OrderServiceImpl implements OrderServiceInter {
 		String hql = "select a from Appointment a, Order o where o.id = ? and a.id = o.appointmentId";
 		Appointment appoint = (Appointment)HibernateUtils.uniqueQuery(hql, parameters);		
 		Date date = new Date();
-		System.out.println(appoint.getDate() + ":" + date);
 		long intervalMilli = appoint.getDate().getTime() - date.getTime();
 		long intervalDays = intervalMilli / (24 * 60 * 60 * 1000);
 		if (intervalDays >= 1) {
+			Session session = HibernateUtils.openSession();
+			Transaction tx = session.beginTransaction();
 			Order order = findById(orderId);
-			order.setStatus("cancel");			
-			if (HibernateUtils.merge(order)) {
+			order.setStatus("cancel");
+			order.setLastUpdate(new DateTime().toString("yyyy-MM-dd HH:mm:ss"));
+			try {
+				session.merge(order);
+				session.createQuery("update Appointment set num = num + 1 where id = :id")
+					.setString("id", order.getAppointmentId())
+					.executeUpdate();
+				session.createQuery("update UserInfo set chance = chance + 1 where id = :id")
+					.setString("id", order.getUserId())
+					.executeUpdate();
 				Notification notification = notificationService.find(order.getAppoint().getUserId(), Integer.toString(order.getId()));
 				notification.setHasRead("0");
 				notification.setOrder(order);
 				notificationService.mergeNotification(notification);
 				notificationService.notifyUser(order.getAppoint().getUserId());
+				tx.commit();
 				return new Status("success", "成功取消！");
-			} else {
+			} catch (Exception e) {
+				e.printStackTrace();
+				tx.rollback();
 				return new Status("error", "取消失败！");
+			} finally {
+				if (session != null && session.isOpen()) {
+					session.close();
+				}
 			}
 		} else {
 			return new Status("error", "已超过时限，无法取消！");
@@ -339,16 +426,14 @@ public class OrderServiceImpl implements OrderServiceInter {
 		Session session = null;
 		List<Order> list = new ArrayList<>();
 		try {
-			String hql = "from Order where appointmentId = :appointmentId";
+			String hql = "from Order where appointmentId = :appointmentId and status != 'cancel'";
 			session = HibernateUtils.openSession();
 			Query query = session.createQuery(hql).setString("appointmentId", appointId);
 			list = query.list();			
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
-			if (session != null && session.isOpen()) {
-				session.close();
-			}			
+			HibernateUtils.closeSession();			
 		}
 		return list;
 	}

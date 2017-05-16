@@ -44,9 +44,10 @@ public class AppointServiceImpl implements AppointServiceInter {
 				hql = hql.concat(" and a.categoryId = :categoryId");
 			}
 			DateTime today = new DateTime();
+			int end = type.equals("writing") ? 7 : 30;
 			Query query = session.createQuery(hql).setString("type", type)
 					.setDate("start", today.plusDays(2).toDate())
-					.setDate("end", today.plusDays(7).toDate());
+					.setDate("end", today.plusDays(end).toDate());
 			if (categoryId != null && !categoryId.equals("")) {
 				query.setParameter("categoryId", categoryId);
 			}
@@ -77,7 +78,7 @@ public class AppointServiceImpl implements AppointServiceInter {
 			}
 			session = HibernateUtils.openSession();
 			DateTime today = new DateTime();
-			int end = type.equals("lab") ? 30 : 7;
+			int end = type.equals("writing") ? 7 : 30;
 			Query query = session.createQuery(hql).setString("type", type)
 					.setDate("start", today.plusDays(2).toDate())
 					.setDate("end", today.plusDays(end).toDate());
@@ -107,7 +108,7 @@ public class AppointServiceImpl implements AppointServiceInter {
 					+ " and date >= :start and date <= :end and status != 'close' and num > 0 order by date, lesson";
 			session = HibernateUtils.openSession();
 			DateTime today = new DateTime();
-			int end = type.equals("lab") ? 30 : 7;
+			int end = type.equals("writing") ? 7 : 30;
 			appoints = session.createQuery(hql).setString("type", type).setString("categoryId", categoryId)
 					.setString("teacherId", teacherId)
 					.setDate("start", today.plusDays(2).toDate())
@@ -259,8 +260,8 @@ public class AppointServiceImpl implements AppointServiceInter {
 		Session session = null;
 		List<Appointment> list = new ArrayList<>();
 		try {
-			String hql = "from Appointment where date >= :start and date <= :end "
-					+ "and type = :type and userId = :userId";
+			String hql = "select distinct o.appoint from Order o where o.appoint.date >= :start and o.appoint.date <= :end "
+					+ "and o.appoint.type = :type and o.appoint.userId = :userId and o.appoint.status != 'cancel'";
 			session = HibernateUtils.openSession();
 			Query query = session.createQuery(hql).setString("type", type)
 					.setString("userId", userId)

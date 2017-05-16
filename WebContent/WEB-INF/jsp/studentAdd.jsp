@@ -51,8 +51,9 @@
 			<div class="nTab">
 				<div class="TabTitle">
 					<ul id="myTab1">
-						<li id="li1" class="normal" onclick="window.location.href='list.do?type=student'">用户列表</li>
-						<li id="li2" class="active">用户添加</li>
+						<li id="li1" class="normal">用户列表</li>
+						<li id="li2" class="active" onclick="window.location.href='preSave.do?type=student'">用户添加</li>
+						<li id="li3" class="normal" onclick="window.location.href='chance.do'">预约次数设置</li>
 					</ul>
 				</div>
 				<div class="statics">

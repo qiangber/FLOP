@@ -1,7 +1,5 @@
 package com.flop.model;
 
-import java.util.Date;
-
 public class Order {
 	private int id;
 	private String userId;
@@ -12,6 +10,8 @@ public class Order {
 	private Appointment appoint;
 	private String title;
 	private String content;
+	private String lastUpdate;
+	
 	public String getTitle() {
 		return title;
 	}
@@ -65,5 +65,11 @@ public class Order {
 	}
 	public void setUserInfo(UserInfo userInfo) {
 		this.userInfo = userInfo;
+	}
+	public String getLastUpdate() {
+		return lastUpdate;
+	}
+	public void setLastUpdate(String lastUpdate) {
+		this.lastUpdate = lastUpdate;
 	}	
 }

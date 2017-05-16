@@ -10,6 +10,7 @@
 			<generator class="native"></generator>
 		</id>
 		<property name="time" length="20"></property>
+		<property name="lastUpdate" length="20"></property>
 		<property name="status" length="20"></property>
 		<property name="userId" length="20"></property>
 		<property name="title"></property>

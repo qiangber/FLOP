@@ -76,8 +76,12 @@
 					</ul>
 				</div>
 				<div class="search_news">
-					<form action="search.do" method="get">
-						<span id="titleSpan">学号：<input id="searchTitle" name="searchNum" type="text" style="width:150px;" value="${searchNum}"/></span>
+					<form action="search.do" method="post">
+						<span id="titleSpan">日期：<input id="searchTitle" name="searchDate" type="text" style="width:60px;" value="${searchDate}"/></span>
+						<span id="titleSpan">地点：<input id="searchTitle" name="searchPlace" type="text" style="width:40px;" value="${searchPlace}"/></span>
+						<span id="titleSpan">节数：<input id="searchTitle" name="searchLesson" type="text" style="width:30px;" value="${searchLesson}"/></span>
+						<span id="titleSpan">预约对象：<input id="searchTitle" name="searchObj" type="text" style="width:67px;" value="${searchObj}"/></span>
+						<span id="titleSpan">学号：<input id="searchTitle" name="searchNum" type="text" style="width:67px;" value="${searchNum}"/></span>
 						<input type="hidden" name="type" value="${type}">
 						<span id="searchSpan"><input type="submit" value="搜索"/></span>		
 						<span id="allSearch" ><input type="button" value="全部用户" onclick="window.location.href='list.do?type=${type}'"/></span>							
@@ -121,7 +125,7 @@
 											<td>成功</td>
 										</c:when>
 										<c:when test="${order.status == 'cancel'}">
-											<td>被取消</td>
+											<td>被取消（${order.lastUpdate}）</td>
 										</c:when>
 										<c:when test="${order.status == 'close'}">
 											<td>已关闭</td>

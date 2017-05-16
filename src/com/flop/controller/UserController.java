@@ -36,6 +36,8 @@ public class UserController {
 	
 	@Autowired
 	private ExcelHandler addUserByExcel;
+	
+	public static volatile int chanceNum = 3;
 
 	@RequestMapping(value="/json/login", method=RequestMethod.POST)
 	public @ResponseBody Object login(HttpServletRequest request, HttpServletResponse response) {
@@ -281,6 +283,24 @@ public class UserController {
 		ModelAndView mav = new ModelAndView();
 		mav.addObject("type", type);
 		mav.setViewName("userAdd");
+		return mav;
+	}
+	
+	@RequestMapping(value = "/chance", method = RequestMethod.GET)
+	public ModelAndView returnChance() {
+		return new ModelAndView("chance", "chanceNum", chanceNum);
+	}
+	
+	@RequestMapping(value = "/chance", method = RequestMethod.POST)
+	public ModelAndView setChance(@RequestParam(value="chance") int chance) {
+		ModelAndView mav = new ModelAndView();
+		if(userService.setChance(chance)) {
+			mav.addObject("result", "设置成功！");
+		} else {
+			mav.addObject("result", "设置失败！");
+		}
+		mav.addObject("chanceNum", chanceNum);
+		mav.setViewName("chance");
 		return mav;
 	}
 	

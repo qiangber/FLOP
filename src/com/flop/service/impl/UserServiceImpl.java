@@ -4,13 +4,14 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.flop.controller.UserController;
 import com.flop.model.User;
 import com.flop.model.UserInfo;
 import com.flop.service.inter.UserServiceInter;
 import com.flop.utils.HibernateUtils;
 
 @Service("userService")
-public class UserServiceImpl implements UserServiceInter {
+public class UserServiceImpl implements UserServiceInter {	
 
 	@Override
 	public UserInfo CheckUser(User user) {
@@ -122,6 +123,17 @@ public class UserServiceImpl implements UserServiceInter {
 	public boolean decreaseCredit(String userId) {
 		String hql = "update UserInfo set credit = credit - 1 where id = ?";
 		String[] parameters = {userId};
+		return HibernateUtils.executeUpdate(hql, parameters);
+	}
+	
+	public boolean setChance(int chance) {
+		UserController.chanceNum = chance;
+		return UserController.chanceNum == chance;
+	}
+	
+	public boolean setChance() {
+		String hql = "update UserInfo set chance = ? where type = 'student'";
+		String[] parameters = {UserController.chanceNum + ""};
 		return HibernateUtils.executeUpdate(hql, parameters);
 	}
 }

@@ -16,6 +16,8 @@ public interface OrderServiceInter {
 	public boolean deal(String status, String id);
 	public List<Order> findAll(int pageSize ,int pageNow, String type);
 	public List<Order> findAll(int pageSize ,int pageNow, String type, String number);
+	public List<Order> findAll(int pageSize ,int pageNow, String type,
+			Date date, String place, int lesson, String obj, String num);
 	public List<Order> findAllWriting();
 	public Order findById(String id);
 	public boolean find(Order order);
@@ -25,7 +27,9 @@ public interface OrderServiceInter {
 	public boolean delete(String id);
 	public Status add(Order order);
 	public int getPageCount(int pageSize, String type, String userId);
-	public int getPageCountByNum(int pageSize, String type, String number);
+	public int getPageCountByNum(int pageSize, String type, String num);
+	public int getSearchPageCount(int pageSize, String type, 
+			Date date, String place, int lesson, String obj, String num);
 	public int getAllPageCount(int pageSize, String type);
 	public Status cancel(String orderId);
 	public boolean close(String appointId);
